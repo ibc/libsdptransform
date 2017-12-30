@@ -1,5 +1,6 @@
 #include "sdptransform.hpp"
-#include <iostream>
+#include "Grammar.hpp"
+#include <iostream> // TODO: TMP
 #include <sstream>
 #include <regex>
 
@@ -7,7 +8,7 @@ using json = nlohmann::json;
 
 namespace sdptransform
 {
-	bool parse(std::string &sdp, json &session)
+	bool parse(std::string& sdp, json& session)
 	{
 		static const std::regex RegexSdpValidLine("^([a-z])=(.*)");
 
@@ -43,11 +44,33 @@ namespace sdptransform
 				media.push_back(m);
 				location = media[media.size() - 1]; // Point at latest media line.
 			}
+
+			// TODO: TEST
+			if (type == 'v')
+			{
+				if (std::regex_match(content, Grammar::items['v'].reg))
+					std::cout << "--- VALID v=: " << content << std::endl;
+				else
+					std::cout << "--- INVALID v=: " << content << std::endl;
+			}
 		}
 
 		session["media"] = media; // Link it up.
 
-		std::cout << session.dump(2) << std::endl;
+		// std::cout << session.dump(2) << std::endl;
+
+
+		std::cout << "--- Grammar items map:" << std::endl;
+
+		for (auto& kv : Grammar::items)
+		{
+			auto type = kv.first;
+			auto& item = kv.second;
+
+			std::cout << " - type:" << type << ", name:" << item.name << std::endl;
+		}
+
+
 
 		return true;
 	}

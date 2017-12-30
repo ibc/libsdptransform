@@ -8,7 +8,7 @@ using json = nlohmann::json;
 
 namespace sdptransform
 {
-	bool parse(std::string &sdp, json &session);
+	bool parse(std::string& sdp, json& session);
 }
 
 #endif
