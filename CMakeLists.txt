@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(
 	SOURCE_FILES
-	${sdptransform_SOURCE_DIR}/src/parse.cpp
+	${sdptransform_SOURCE_DIR}/src/parser.cpp
+	${sdptransform_SOURCE_DIR}/src/writer.cpp
 	${sdptransform_SOURCE_DIR}/src/Grammar.cpp
 	${sdptransform_SOURCE_DIR}/include/sdptransform.hpp
 	${sdptransform_SOURCE_DIR}/include/Grammar.hpp

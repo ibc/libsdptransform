@@ -4,9 +4,7 @@
 #include <fstream>
 #include <streambuf>
 
-using json = nlohmann::json;
-
-int main(void)
+int main(int argc, char* argv[])
 {
 	std::ifstream t("test/data/normal.sdp");
 	std::string sdp;
@@ -19,11 +17,15 @@ int main(void)
 		(std::istreambuf_iterator<char>(t)),
 		std::istreambuf_iterator<char>());
 
-	json session = nlohmann::json::object();
-	bool ret = sdptransform::parse(sdp, session);
+	auto session = sdptransform::getEmptySession();
 
-	// std::cout << "ret: " << ret << std::endl;
+	sdptransform::parse(sdp, session);
+
 	std::cout << session.dump(2) << std::endl;
+
+	auto newSdp = sdptransform::write(session);
+
+	std::cout << "sdptransform::write(session):" << std::endl << newSdp << std::endl;
 
 	std::cout << "DONE" << std::endl;
 

@@ -4,11 +4,18 @@
 #include "json.hpp"
 #include <string>
 
-using json = nlohmann::json;
-
 namespace sdptransform
 {
-	bool parse(std::string& sdp, json& session);
+	inline nlohmann::json getEmptySession()
+	{
+		nlohmann::json session{ nlohmann::json::object() };
+
+		return session;
+	}
+
+	void parse(std::string& sdp, nlohmann::json& session);
+
+	std::string write(nlohmann::json& session);
 }
 
 #endif

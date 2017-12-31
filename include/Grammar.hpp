@@ -8,8 +8,6 @@
 #include <regex>
 #include <functional>
 
-using json = nlohmann::json;
-
 namespace sdptransform
 {
 	class Grammar
@@ -22,12 +20,8 @@ namespace sdptransform
 			std::regex reg;
 			std::vector<std::string> names;
 			std::string format;
-			std::function<std::string(json&)> formatFunc;
+			std::function<std::string(nlohmann::json&)> formatFunc;
 		};
-
-	// TODO: TEST
-	public:
-		static void dump();
 
 	public:
 		static std::map<char, std::vector<Rule>> mapRules;

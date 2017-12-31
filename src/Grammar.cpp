@@ -1,5 +1,7 @@
 #include "Grammar.hpp"
 
+using json = nlohmann::json;
+
 namespace sdptransform
 {
 	std::map<char, std::vector<Grammar::Rule>> Grammar::mapRules =
@@ -433,6 +435,141 @@ namespace sdptransform
 					"msid:%s"
 				},
 
+				// a=ptime:20
+				{
+					// name:
+					"ptime",
+					// push:
+					"",
+					// reg:
+					std::regex("^ptime:(\\d*)"),
+					// names:
+					{ },
+					// format:
+					"ptime:%d"
+				},
+
+				// a=maxptime:60
+				{
+					// name:
+					"maxptime",
+					// push:
+					"",
+					// reg:
+					std::regex("^maxptime:(\\d*)"),
+					// names:
+					{ },
+					// format:
+					"maxptime:%d"
+				},
+
+				// a=sendrecv
+				{
+					// name:
+					"direction",
+					// push:
+					"",
+					// reg:
+					std::regex("^(sendrecv|recvonly|sendonly|inactive)"),
+					// names:
+					{ },
+					// format:
+					"%s"
+				},
+
+				// a=ice-lite
+				{
+					// name:
+					"icelite",
+					// push:
+					"",
+					// reg:
+					std::regex("^(ice-lite)"),
+					// names:
+					{ },
+					// format:
+					"%s"
+				},
+
+				// a=ice-ufrag:F7gI
+				{
+					// name:
+					"iceUfrag",
+					// push:
+					"",
+					// reg:
+					std::regex("^ice-ufrag:(\\S*)"),
+					// names:
+					{ },
+					// format:
+					"ice-ufrag:%s"
+				},
+
+				// a=fingerprint:SHA-1 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+				{
+					// name:
+					"fingerprint",
+					// push:
+					"",
+					// reg:
+					std::regex("^fingerprint:(\\S*) (\\S*)"),
+					// names:
+					{ "type", "hash" },
+					// format:
+					"fingerprint:%s %s"
+				},
+
+				// a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
+				// a=candidate:1162875081 1 udp 2113937151 192.168.34.75 60017 typ host generation 0 network-id 3 network-cost 10
+				// a=candidate:3289912957 2 udp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 generation 0 network-id 3 network-cost 10
+				// a=candidate:229815620 1 tcp 1518280447 192.168.150.19 60017 typ host tcptype active generation 0 network-id 3 network-cost 10
+				// a=candidate:3289912957 2 tcp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 tcptype passive generation 0 network-id 3 network-cost 10
+				{
+					// name:
+					"",
+					// push:
+					"candidates",
+					// reg:
+					std::regex("^candidate:(\\S*) (\\d*) (\\S*) (\\d*) (\\S*) (\\d*) typ (\\S*)(?: raddr (\\S*) rport (\\d*))?(?: tcptype (\\S*))?(?: generation (\\d*))?(?: network-id (\\d*))?(?: network-cost (\\d*))?"),
+					// names:
+					{ "foundation", "component", "transport", "priority", "ip", "port", "type", "raddr", "rport", "tcptype", "generation", "network-id", "network-cost" },
+					// format:
+					"",
+					// formatFunc:
+					[](json& o)
+					{
+						return "TODO";
+					}
+				},
+
+				// a=end-of-candidates
+				{
+					// name:
+					"endOfCandidates",
+					// push:
+					"",
+					// reg:
+					std::regex("^remote-candidates:(.*)"),
+					// names:
+					{ },
+					// format:
+					"remote-candidates:%s"
+				},
+
+				// a=ice-options:google-ice
+				{
+					// name:
+					"iceOptions",
+					// push:
+					"",
+					// reg:
+					std::regex("^ice-options:(\\S*)"),
+					// names:
+					{ },
+					// format:
+					"ice-options:%s"
+				},
+
 				// a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1
 				{
 					// name:
@@ -450,7 +587,22 @@ namespace sdptransform
 					{
 						return "TODO";
 					}
-				}
+				},
+
+				// a=ssrc-group:FEC 1 2
+				// a=ssrc-group:FEC-FR 3004364195 1080772241
+				{
+					// name:
+					"",
+					// push:
+					"ssrcGroups",
+					// reg:
+					std::regex("^ssrc-group:([\x21\x23\x24\x25\x26\x27\x2A\x2B\x2D\x2E\\w]*) (.*)"),
+					// names:
+					{ "semantics", "ssrcs" },
+					// format:
+					"ssrc-group:%s %s"
+				},
 			}
 		}
 	};
