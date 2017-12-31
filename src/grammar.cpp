@@ -325,7 +325,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							return hasValue(o, "address") ?
+								"rtcp:%d %s IP%d %s" :
+								"rtcp:%d";
 						}
 					},
 
@@ -358,7 +360,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							return hasValue(o, "subtype") ?
+								"rtcp-fb:%s %s %s" :
+								"rtcp-fb:%s %s";
 						}
 					},
 
@@ -400,7 +404,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							return hasValue(o, "sessionConfig") ?
+								"crypto:%d %s %s %s" :
+								"crypto:%d %s %s";
 						}
 					},
 
@@ -651,6 +657,225 @@ namespace sdptransform
 						{ "semantics", "ssrcs" },
 						// format:
 						"ssrc-group:%s %s"
+					},
+
+					// a=msid-semantic: WMS Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV
+					{
+						// name:
+						"msidSemantic",
+						// push:
+						"",
+						// reg:
+						std::regex("^msid-semantic:\\s?(\\w*) (\\S*)"),
+						// names:
+						{ "semantic", "token" },
+						// format:
+						"msid-semantic: %s %s" // Space after ':' is not accidental.
+					},
+
+					// a=group:BUNDLE audio video
+					{
+						// name:
+						"",
+						// push:
+						"groups",
+						// reg:
+						std::regex("^group:(\\w*) (.*)"),
+						// names:
+						{ "type", "mids" },
+						// format:
+						"group:%s %s"
+					},
+
+					// a=rtcp-mux
+					{
+						// name:
+						"rtcpMux",
+						// push:
+						"",
+						// reg:
+						std::regex("^(rtcp-mux)"),
+						// names:
+						{ },
+						// format:
+						"%s"
+					},
+
+					// a=rtcp-rsize
+					{
+						// name:
+						"rtcpRsize",
+						// push:
+						"",
+						// reg:
+						std::regex("^(rtcp-rsize)"),
+						// names:
+						{ },
+						// format:
+						"%s"
+					},
+
+					// a=sctpmap:5000 webrtc-datachannel 1024
+					{
+						// name:
+						"sctpmap",
+						// push:
+						"",
+						// reg:
+						std::regex("^sctpmap:([\\w_\\/]*) (\\S*)(?: (\\S*))?"),
+						// names:
+						{ "sctpmapNumber", "app", "maxMessageSize" },
+						// format:
+						"",
+						// formatFunc:
+						[](const json& o)
+						{
+							return hasValue(o, "maxMessageSize") ?
+								"sctpmap:%s %s %s" :
+								"sctpmap:%s %s";
+						}
+					},
+
+					// a=x-google-flag:conference
+					{
+						// name:
+						"xGoogleFlag",
+						// push:
+						"",
+						// reg:
+						std::regex("x-google-flag:([^\\s]*)"),
+						// names:
+						{ },
+						// format:
+						"x-google-flag:%s"
+					},
+
+					// a=rid:1 send max-width=1280;max-height=720;max-fps=30;depend=0
+					{
+						// name:
+						"",
+						// push:
+						"rids",
+						// reg:
+						std::regex("^rid:([\\d\\w]+) (\\w+)(?: ([\\S| ]*))?"),
+						// names:
+						{ "id", "direction", "params" },
+						// format:
+						"",
+						// formatFunc:
+						[](const json& o)
+						{
+							return hasValue(o, "params") ?
+								"rid:%s %s %s" :
+								"rid:%s %s";
+						}
+					},
+
+					// a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]
+					// a=imageattr:* send [x=800,y=640] recv *
+					// a=imageattr:100 recv [x=320,y=240]
+					{
+						// name:
+						"",
+						// push:
+						"imageattrs",
+						// reg:
+						std::regex(
+							std::string() +
+							// a=imageattr:97
+							"^imageattr:(\\d+|\\*)" +
+							// send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320]
+							"[\\s\\t]+(send|recv)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*)" +
+							// recv [x=330,y=250]
+							"(?:[\\s\\t]+(recv|send)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*))?"
+						),
+						// names:
+						{ "pt", "dir1", "attrs1", "dir2", "attrs2" },
+						// format:
+						"",
+						// formatFunc:
+						[](const json& o)
+						{
+							return std::string("imageattr:%s %s %s") +
+								(hasValue(o, "dir2") ? " %s %s" : "");
+						}
+					},
+
+					// a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8
+					// a=simulcast:recv 1;4,5 send 6;7
+					{
+						// name:
+						"simulcast",
+						// push:
+						"",
+						// reg:
+						std::regex(
+							std::string() +
+							// a=simulcast:
+							"^simulcast:" +
+							// send 1,2,3;~4,~5
+							"(send|recv) ([a-zA-Z0-9\\-_~;,]+)" +
+							// space + recv 6;~7,~8
+							"(?:\\s?(send|recv) ([a-zA-Z0-9\\-_~;,]+))?" +
+							// end
+							"$"
+						),
+						// names:
+						{ "dir1", "list1", "dir2", "list2" },
+						// format:
+						"",
+						// formatFunc:
+						[](const json& o)
+						{
+							return std::string("simulcast:%s %s") +
+								(hasValue(o, "dir2") ? " %s %s" : "");
+						}
+					},
+
+					// Old simulcast draft 03 (implemented by Firefox).
+					//   https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03
+					// a=simulcast: recv pt=97;98 send pt=97
+					// a=simulcast: send rid=5;6;7 paused=6,7
+					{
+						// name:
+						"simulcast_03",
+						// push:
+						"",
+						// reg:
+						std::regex("^simulcast:[\\s\\t]+([\\S+\\s\t]+)$"),
+						// names:
+						{ "value" },
+						// format:
+						"simulcast: %s"
+					},
+
+					// a=framerate:25
+					// a=framerate:29.97
+					{
+						// name:
+						"framerate",
+						// push:
+						"",
+						// reg:
+						std::regex("^framerate:(\\d+(?:$|\\.\\d+))"),
+						// names:
+						{ },
+						// format:
+						"framerate:%s"
+					},
+
+					// Any a= that we don't understand is kepts verbatim on media.invalid.
+					{
+						// name:
+						"",
+						// push:
+						"invalid",
+						// reg:
+						std::regex("(.*)"),
+						// names:
+						{ "value" },
+						// format:
+						"%s"
 					},
 				}
 			}

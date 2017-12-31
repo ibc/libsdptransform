@@ -21,11 +21,11 @@ int main(int argc, char* argv[])
 
 	sdptransform::parse(sdp, session);
 
-	// std::cout << session.dump(2) << std::endl;
+	std::cout << "\nsession.dump(2):\n----\n" << session.dump(2) << "\n----\n";
 
 	auto newSdp = sdptransform::write(session);
 
-	std::cout << "sdptransform::write(session):\n----\n" << newSdp << "----\n";
+	std::cout << "\nsdptransform::write(session):\n----\n" << newSdp << "----\n";
 
 	return 0;
 }

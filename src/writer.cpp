@@ -1,8 +1,6 @@
 #include "sdptransform.hpp"
 #include <cstddef> // size_t
 #include <sstream> // std::stringstream
-// TODO: REMOVE
-#include <iostream>
 
 using json = nlohmann::json;
 
@@ -133,8 +131,6 @@ namespace sdptransform
 
 		linestream << type << "=";
 
-		// std::cout << "format: \"" << format << "\"" << std::endl;
-
 		for(
 			auto it = std::sregex_iterator(format.begin(), format.end(), FormatRegex);
 			it != std::sregex_iterator();
@@ -143,14 +139,6 @@ namespace sdptransform
 		{
 			const std::smatch& match = *it;
 			const std::string& str = match.str();
-
-			// std::cout << "  - found " << str << "\n";
-			// std::cout << "    - prefix: \"" << match.prefix() << "\"\n";
-			// for (size_t n = 0; n < match.size(); ++n)
-			// {
-			// 	std::cout << "    - match[" << n << "] = \"" << match[n] << "\"\n";
-			// }
-			// std::cout << "    - suffix: \"" << match.suffix() << "\"\n";
 
 			if (i >= len)
 			{
