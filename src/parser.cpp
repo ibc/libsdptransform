@@ -23,7 +23,7 @@ namespace sdptransform
 
 	void parse(const std::string& sdp, json& session)
 	{
-		static const std::regex ValidLine("^([a-z])=(.*)");
+		static const std::regex ValidLineRegex("^([a-z])=(.*)");
 
 		if (!session.is_object())
 			throw std::invalid_argument("given session is not a JSON object");
@@ -40,7 +40,7 @@ namespace sdptransform
 				line.pop_back();
 
 			// Ensure it's a valid SDP line.
-			if (!std::regex_match(line, ValidLine))
+			if (!std::regex_search(line, ValidLineRegex))
 				continue;
 
 			char type = line[0];
@@ -57,14 +57,14 @@ namespace sdptransform
 				location = std::addressof(media[media.size() - 1]); // Point at latest media line.
 			}
 
-			if (grammar::mapRules.find(type) == grammar::mapRules.end())
+			if (grammar::rulesMap.find(type) == grammar::rulesMap.end())
 				continue;
 
-			for (int j = 0; j < grammar::mapRules.at(type).size(); ++j)
+			for (int j = 0; j < grammar::rulesMap.at(type).size(); ++j)
 			{
-				auto& rule = grammar::mapRules.at(type)[j];
+				auto& rule = grammar::rulesMap.at(type)[j];
 
-				if (std::regex_match(content, rule.reg))
+				if (std::regex_search(content, rule.reg))
 				{
 					parseReg(rule, *location, content);
 
@@ -91,7 +91,7 @@ namespace sdptransform
 
 		std::smatch match;
 
-		std::regex_match(content, match, rule.reg);
+		std::regex_search(content, match, rule.reg);
 
 		json object = json::object();
 		json& keyLocation = !rule.push.empty() ?

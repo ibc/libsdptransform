@@ -6,7 +6,9 @@ namespace sdptransform
 {
 	namespace grammar
 	{
-		const std::map<char, std::vector<Rule>> mapRules =
+		bool hasValue(const json& o, const std::string& key);
+
+		const std::map<char, std::vector<Rule>> rulesMap =
 		{
 			{
 				'v',
@@ -271,7 +273,11 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							return hasValue(o, "encoding") ?
+								"rtpmap:%d %s/%s/%s" :
+								o.find("rate") != o.end() ?
+									"rtpmap:%d %s/%s" :
+									"rtpmap:%d %s";
 						}
 					},
 
@@ -372,7 +378,10 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							return std::string("extmap:%d") +
+								(hasValue(o, "direction") ? "/%s" : "%v") +
+								" %s" +
+								(hasValue(o, "config") ? " %s" : "");
 						}
 					},
 
@@ -507,6 +516,20 @@ namespace sdptransform
 						"ice-ufrag:%s"
 					},
 
+					// a=ice-pwd:x9cml/YzichV2+XlhiMu8g
+					{
+						// name:
+						"icePwd",
+						// push:
+						"",
+						// reg:
+						std::regex("^ice-pwd:(\\S*)"),
+						// names:
+						{ },
+						// format:
+						"ice-pwd:%s"
+					},
+
 					// a=fingerprint:SHA-1 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
 					{
 						// name:
@@ -540,7 +563,21 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							std::string str = "candidate:%s %d %s %d %s %d typ %s";
+
+							str += hasValue(o, "raddr") ? " raddr %s rport %d" : "%v%v";
+
+							// NOTE: candidate has three optional chunks, so %void middles one if it's
+							// missing.
+							str += hasValue(o, "tcptype") ? " tcptype %s" : "%v";
+
+							if (hasValue(o, "generation"))
+								str += " generation %d";
+
+							str += hasValue(o, "network-id") ? " network-id %d" : "%v";
+							str += hasValue(o, "network-cost") ? " network-cost %d" : "%v";
+
+							return str;
 						}
 					},
 
@@ -587,7 +624,17 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return "TODO";
+							std::string str = "ssrc:%d";
+
+							if (hasValue(o, "attribute"))
+							{
+								str += " %s";
+
+								if (hasValue(o, "value"))
+									str += ":%s";
+							}
+
+							return str;
 						}
 					},
 
@@ -608,5 +655,26 @@ namespace sdptransform
 				}
 			}
 		};
+
+		bool hasValue(const json& o, const std::string& key)
+		{
+			if (o.find(key) == o.end())
+				return false;
+
+			if (o.at(key).is_string())
+			{
+				std::string str = o.at(key);
+
+				return !str.empty();
+			}
+			else if (o.at(key).is_number())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 }

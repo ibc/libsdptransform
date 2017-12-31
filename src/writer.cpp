@@ -1,4 +1,5 @@
 #include "sdptransform.hpp"
+#include <cstddef> // size_t
 #include <sstream> // std::stringstream
 // TODO: REMOVE
 #include <iostream>
@@ -8,8 +9,6 @@ using json = nlohmann::json;
 namespace sdptransform
 {
 	const std::string makeLine(char type, const grammar::Rule& rule, const json& location);
-
-	const std::string format(const std::string& line, std::vector<json>& args);
 
 	std::string write(json& session)
 	{
@@ -44,7 +43,7 @@ namespace sdptransform
 		// Loop through OuterOrder for matching properties on session.
 		for (auto type : OuterOrder)
 		{
-			for (auto& rule : grammar::mapRules.at(type))
+			for (auto& rule : grammar::rulesMap.at(type))
 			{
 				if (
 					!rule.name.empty() &&
@@ -71,9 +70,11 @@ namespace sdptransform
 		// Then for each media line, follow the InnerOrder.
 		for (auto& mLine : session.at("media"))
 		{
+			sdpstream << makeLine('m', grammar::rulesMap.at('m')[0], mLine);
+
 			for (auto type : InnerOrder)
 			{
-				for (auto& rule : grammar::mapRules.at(type))
+				for (auto& rule : grammar::rulesMap.at(type))
 				{
 					if (
 						!rule.name.empty() &&
@@ -103,11 +104,12 @@ namespace sdptransform
 
 	const std::string makeLine(char type, const grammar::Rule& rule, const json& location)
 	{
-		std::string str = rule.format.empty() ?
+		static const std::regex FormatRegex("%[sdv%]");
+
+		const std::string format = rule.format.empty() ?
 			(rule.formatFunc(!rule.push.empty() ? location : location.at(rule.name))) :
 			rule.format;
 
-		const std::string line = std::string(1, type) + "=" + str;
 		std::vector<json> args;
 
 		if (!rule.names.empty())
@@ -125,21 +127,66 @@ namespace sdptransform
 			args.push_back(location.at(rule.name));
 		}
 
-		return format(line, args);
-	}
+		std::stringstream linestream;
+		size_t i = 0;
+		size_t len = args.size();
 
-	const std::string format(const std::string& line, std::vector<json>& args)
-	{
-		// for (auto& arg : args)
-		// {
-		// 	std::cout << arg << std::endl;
-		// }
+		linestream << type << "=";
 
+		// std::cout << "format: \"" << format << "\"" << std::endl;
 
+		for(
+			auto it = std::sregex_iterator(format.begin(), format.end(), FormatRegex);
+			it != std::sregex_iterator();
+		  ++it
+		 )
+		{
+			const std::smatch& match = *it;
+			const std::string& str = match.str();
 
+			// std::cout << "  - found " << str << "\n";
+			// std::cout << "    - prefix: \"" << match.prefix() << "\"\n";
+			// for (size_t n = 0; n < match.size(); ++n)
+			// {
+			// 	std::cout << "    - match[" << n << "] = \"" << match[n] << "\"\n";
+			// }
+			// std::cout << "    - suffix: \"" << match.suffix() << "\"\n";
 
+			if (i >= len)
+			{
+				linestream << str;
+			}
+			else
+			{
+				auto& arg = args[i];
+				i++;
 
+				linestream << match.prefix();
 
-		return line + "\r\n";
+				if (str == "%%")
+				{
+					linestream << "%";
+				}
+				else if (str == "%s")
+				{
+					if (arg.is_string())
+						linestream << arg.get<std::string>();
+					else
+						linestream << arg;
+				}
+				else if (str == "%d")
+				{
+					linestream << arg;
+				}
+				else if (str == "%v")
+				{
+					// Do nothing.
+				}
+			}
+		}
+
+		linestream << "\r\n";
+
+		return linestream.str();
 	}
 }
