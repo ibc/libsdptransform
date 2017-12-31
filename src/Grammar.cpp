@@ -333,6 +333,106 @@ namespace sdptransform
 					"rtcp-fb:%d trr-int %d"
 				},
 
+				// a=rtcp-fb:98 nack rpsi
+				{
+					// name:
+					"",
+					// push:
+					"rtcpFb",
+					// reg:
+					std::regex("^rtcp-fb:(\\*|\\d*) ([\\w\\-_]*)(?: ([\\w\\-_]*))?"),
+					// names:
+					{ "payload", "type", "subtype" },
+					// format:
+					"",
+					// formatFunc:
+					[](json& o)
+					{
+						return "TODO";
+					}
+				},
+
+				// a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
+				// a=extmap:1/recvonly URI-gps-string
+				{
+					// name:
+					"",
+					// push:
+					"ext",
+					// reg:
+					std::regex("^extmap:(\\d+)(?:\\/(\\w+))? (\\S*)(?: (\\S*))?"),
+					// names:
+					{ "value", "direction", "uri", "config" },
+					// format:
+					"",
+					// formatFunc:
+					[](json& o)
+					{
+						return "TODO";
+					}
+				},
+
+				// a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
+				{
+					// name:
+					"",
+					// push:
+					"crypto",
+					// reg:
+					std::regex("^crypto:(\\d*) ([\\w_]*) (\\S*)(?: (\\S*))?"),
+					// names:
+					{ "id", "suite", "config", "sessionConfig" },
+					// format:
+					"",
+					// formatFunc:
+					[](json& o)
+					{
+						return "TODO";
+					}
+				},
+
+				// a=setup:actpass
+				{
+					// name:
+					"setup",
+					// push:
+					"",
+					// reg:
+					std::regex("^setup:(\\w*)"),
+					// names:
+					{ },
+					// format:
+					"setup:%s"
+				},
+
+				// a=mid:1
+				{
+					// name:
+					"mid",
+					// push:
+					"",
+					// reg:
+					std::regex("^mid:([^\\s]*)"),
+					// names:
+					{ },
+					// format:
+					"mid:%s"
+				},
+
+				// a=msid:0c8b064d-d807-43b4-b434-f92a889d8587 98178685-d409-46e0-8e16-7ef0db0db64a
+				{
+					// name:
+					"msid",
+					// push:
+					"",
+					// reg:
+					std::regex("^msid:(.*)"),
+					// names:
+					{ },
+					// format:
+					"msid:%s"
+				},
+
 				// a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1
 				{
 					// name:
