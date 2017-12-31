@@ -1,6 +1,8 @@
 #include "sdptransform.hpp"
 #include "Grammar.hpp"
 #include <iostream> // TODO: TMP
+#include <cstddef> // size_t
+#include <memory> // std::addressof()
 #include <sstream>
 #include <regex>
 
@@ -8,15 +10,23 @@ using json = nlohmann::json;
 
 namespace sdptransform
 {
+	void parseReg(Grammar::Rule& rule, json& location, std::string& content);
+	void attachProperties(
+		std::smatch& match, json& location, std::vector<std::string>& names, std::string& rawName);
+	json toIntIfInt(const std::ssub_match& subMatch);
+	bool isNumber(const std::string& string);
+
 	bool parse(std::string& sdp, json& session)
 	{
+		// TODO: TMP
+		// Grammar::dump();
+
 		static const std::regex RegexSdpValidLine("^([a-z])=(.*)");
 
 		std::stringstream sdpstream(sdp);
 		std::string line;
-		// json session = json::object();
 		json media = json::array();
-		json location = session;
+		json* location = std::addressof(session);
 
 		if (!session.is_object())
 			return false;
@@ -42,36 +52,103 @@ namespace sdptransform
 				m["fmtp"] = json::array();
 
 				media.push_back(m);
-				location = media[media.size() - 1]; // Point at latest media line.
+				location = std::addressof(media[media.size() - 1]); // Point at latest media line.
 			}
 
-			// TODO: TEST
-			if (type == 'v')
+			if (Grammar::mapRules.find(type) == Grammar::mapRules.end())
+				continue;
+
+			for (int j = 0; j < Grammar::mapRules[type].size(); ++j)
 			{
-				if (std::regex_match(content, Grammar::items['v'].reg))
-					std::cout << "--- VALID v=: " << content << std::endl;
-				else
-					std::cout << "--- INVALID v=: " << content << std::endl;
+				auto& rule = Grammar::mapRules[type][j];
+
+				if (std::regex_match(content, rule.reg))
+				{
+					parseReg(rule, *location, content);
+
+					break;
+				}
 			}
+
+			// std::cout << " ---- " << type << "=" << content << " ----" << std::endl;
+			// std::cout << session.dump(2) << std::endl;
 		}
 
 		session["media"] = media; // Link it up.
 
-		// std::cout << session.dump(2) << std::endl;
+		return true;
+	}
 
+	void parseReg(Grammar::Rule& rule, json& location, std::string& content)
+	{
+		bool needsBlank = !rule.name.empty() && !rule.names.empty();
 
-		std::cout << "--- Grammar items map:" << std::endl;
-
-		for (auto& kv : Grammar::items)
+		if (!rule.push.empty() && location.find(rule.push) == location.end())
 		{
-			auto type = kv.first;
-			auto& item = kv.second;
-
-			std::cout << " - type:" << type << ", name:" << item.name << std::endl;
+			location[rule.push] = json::array();
+		}
+		else if (needsBlank && location.find(rule.name) == location.end())
+		{
+			location[rule.name] = json::object();
 		}
 
+		std::smatch match;
 
+		std::regex_match(content, match, rule.reg);
 
-		return true;
+		json object = json::object();
+		json& keyLocation = !rule.push.empty() ?
+			object : // Blank object that will be pushed.
+			needsBlank ? location[rule.name] : location; // Otherwise named location or root.
+
+		attachProperties(match, keyLocation, rule.names, rule.name);
+
+		if (!rule.push.empty())
+			location[rule.push].push_back(keyLocation);
+	}
+
+	void attachProperties(
+		std::smatch& match, json& location, std::vector<std::string>& names, std::string& rawName)
+	{
+		if (!rawName.empty() && names.empty())
+		{
+			location[rawName] = toIntIfInt(match[1]);
+		}
+		else
+		{
+			for (size_t i = 0; i < names.size(); ++i)
+			{
+				if (i + 1 < match.size())
+					location[names[i]] = toIntIfInt(match[i + 1]);
+			}
+		}
+	}
+
+	json toIntIfInt(const std::ssub_match& subMatch)
+	{
+		auto string = subMatch.str();
+
+		if (!isNumber(string))
+			return string;
+
+		try
+		{
+			return std::stoll(string);
+		}
+		catch (const std::exception& error)
+		{
+			return string;
+		}
+	}
+
+	bool isNumber(const std::string& string)
+	{
+		return (
+			!string.empty() &&
+			std::find_if(
+				string.begin(),
+				string.end(),
+				[](char c) { return !std::isdigit(c); }) == string.end()
+		);
 	}
 }

@@ -8,7 +8,7 @@ using json = nlohmann::json;
 
 int main(void)
 {
-	std::ifstream t("test/data/sdp-chrome.txt");
+	std::ifstream t("test/data/normal.sdp");
 	std::string sdp;
 
 	t.seekg(0, std::ios::end);
@@ -22,8 +22,10 @@ int main(void)
 	json session = nlohmann::json::object();
 	bool ret = sdptransform::parse(sdp, session);
 
-	std::cout << "ret: " << ret << std::endl;
+	// std::cout << "ret: " << ret << std::endl;
 	std::cout << session.dump(2) << std::endl;
+
+	std::cout << "DONE" << std::endl;
 
 	return 0;
 }
