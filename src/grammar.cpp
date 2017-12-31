@@ -1,4 +1,4 @@
-#include "Grammar.hpp"
+#include "grammar.hpp"
 
 using json = nlohmann::json;
 

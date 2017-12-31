@@ -9,9 +9,9 @@ set(
 	SOURCE_FILES
 	${sdptransform_SOURCE_DIR}/src/parser.cpp
 	${sdptransform_SOURCE_DIR}/src/writer.cpp
-	${sdptransform_SOURCE_DIR}/src/Grammar.cpp
+	${sdptransform_SOURCE_DIR}/src/grammar.cpp
 	${sdptransform_SOURCE_DIR}/include/sdptransform.hpp
-	${sdptransform_SOURCE_DIR}/include/Grammar.hpp
+	${sdptransform_SOURCE_DIR}/include/grammar.hpp
 	${sdptransform_SOURCE_DIR}/include/json.hpp
 )
 

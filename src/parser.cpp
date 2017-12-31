@@ -1,5 +1,5 @@
 #include "sdptransform.hpp"
-#include "Grammar.hpp"
+#include "grammar.hpp"
 #include <stdexcept>
 #include <cstddef> // size_t
 #include <memory> // std::addressof()

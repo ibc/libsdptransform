@@ -1,5 +1,5 @@
 #include "sdptransform.hpp"
-#include "Grammar.hpp"
+#include "grammar.hpp"
 // TODO: REMOVE
 #include <iostream>
 
