@@ -1,6 +1,6 @@
-# sdp-transform-c
+# libsdptransform
 
-Session Description Protocol parser/writer exposing an API similar to the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library.
+Session Description Protocol parser/writer exposing an C++ API similar to the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library.
 
 
 ## Author
