@@ -10,9 +10,8 @@
 
 namespace sdptransform
 {
-	class Grammar
+	namespace grammar
 	{
-	public:
 		struct Rule
 		{
 			std::string name;
@@ -23,9 +22,8 @@ namespace sdptransform
 			std::function<std::string(nlohmann::json&)> formatFunc;
 		};
 
-	public:
-		static std::map<char, std::vector<Rule>> mapRules;
-	};
+		extern std::map<char, std::vector<Rule>> mapRules;
+	}
 }
 
 #endif

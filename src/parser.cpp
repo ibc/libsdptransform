@@ -10,10 +10,12 @@ using json = nlohmann::json;
 
 namespace sdptransform
 {
-	void parseReg(Grammar::Rule& rule, json& location, std::string& content);
+	void parseReg(grammar::Rule& rule, json& location, std::string& content);
+
 	void attachProperties(
 		std::smatch& match, json& location, std::vector<std::string>& names, std::string& rawName);
 	json toIntIfInt(const std::ssub_match& subMatch);
+
 	bool isNumber(const std::string& string);
 
 	void parse(std::string& sdp, json& session)
@@ -52,12 +54,12 @@ namespace sdptransform
 				location = std::addressof(media[media.size() - 1]); // Point at latest media line.
 			}
 
-			if (Grammar::mapRules.find(type) == Grammar::mapRules.end())
+			if (grammar::mapRules.find(type) == grammar::mapRules.end())
 				continue;
 
-			for (int j = 0; j < Grammar::mapRules[type].size(); ++j)
+			for (int j = 0; j < grammar::mapRules[type].size(); ++j)
 			{
-				auto& rule = Grammar::mapRules[type][j];
+				auto& rule = grammar::mapRules[type][j];
 
 				if (std::regex_match(content, rule.reg))
 				{
@@ -71,7 +73,7 @@ namespace sdptransform
 		session["media"] = media; // Link it up.
 	}
 
-	void parseReg(Grammar::Rule& rule, json& location, std::string& content)
+	void parseReg(grammar::Rule& rule, json& location, std::string& content)
 	{
 		bool needsBlank = !rule.name.empty() && !rule.names.empty();
 
