@@ -1,11 +1,14 @@
 #ifndef SDPTRANSFORM_GRAMMAR_HPP
 #define SDPTRANSFORM_GRAMMAR_HPP
 
+#include "json.hpp"
 #include <vector>
 #include <string>
 #include <map>
 #include <regex>
 #include <functional>
+
+using json = nlohmann::json;
 
 namespace sdptransform
 {
@@ -19,7 +22,7 @@ namespace sdptransform
 			std::regex reg;
 			std::vector<std::string> names;
 			std::string format;
-			std::function<std::string(int)> formatFunc;
+			std::function<std::string(json&)> formatFunc;
 		};
 
 	// TODO: TEST

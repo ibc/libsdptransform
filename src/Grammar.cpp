@@ -1,5 +1,4 @@
 #include "Grammar.hpp"
-#include <iostream> // TODO: TMP
 
 namespace sdptransform
 {
@@ -253,6 +252,87 @@ namespace sdptransform
 		{
 			'a',
 			{
+				// a=rtpmap:110 opus/48000/2
+				{
+					// name:
+					"",
+					// push:
+					"rtp",
+					// reg:
+					std::regex("^rtpmap:(\\d*) ([\\w\\-\\.]*)(?:\\s*\\/(\\d*)(?:\\s*\\/(\\S*))?)?"),
+					// names:
+					{ "payload", "codec", "rate", "encoding" },
+					// format:
+					"",
+					// formatFunc:
+					[](json& o)
+					{
+						return "TODO";
+					}
+				},
+
+				// a=fmtp:108 profile-level-id=24;object=23;bitrate=64000
+				// a=fmtp:111 minptime=10; useinbandfec=1
+				{
+					// name:
+					"",
+					// push:
+					"fmtp",
+					// reg:
+					std::regex("^fmtp:(\\d*) ([\\S| ]*)"),
+					// names:
+					{ "payload", "config" },
+					// format:
+					"fmtp:%d %s"
+				},
+
+				// a=control:streamid=0
+				{
+					// name:
+					"control",
+					// push:
+					"",
+					// reg:
+					std::regex("^control:(.*)"),
+					// names:
+					{ },
+					// format:
+					"control:%s"
+				},
+
+				// a=rtcp:65179 IN IP4 193.84.77.194
+				{
+					// name:
+					"rtcp",
+					// push:
+					"",
+					// reg:
+					std::regex("^rtcp:(\\d*)(?: (\\S*) IP(\\d) (\\S*))?"),
+					// names:
+					{ "port", "netType", "ipVer", "address" },
+					// format:
+					"",
+					// formatFunc:
+					[](json& o)
+					{
+						return "TODO";
+					}
+				},
+
+				// a=rtcp-fb:98 trr-int 100
+				{
+					// name:
+					"",
+					// push:
+					"rtcpFbTrrInt",
+					// reg:
+					std::regex("^rtcp-fb:(\\*|\\d*) trr-int (\\d*)"),
+					// names:
+					{ "payload", "value" },
+					// format:
+					"rtcp-fb:%d trr-int %d"
+				},
+
 				// a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1
 				{
 					// name:
@@ -266,44 +346,12 @@ namespace sdptransform
 					// format:
 					"",
 					// formatFunc:
-					[](int x)
+					[](json& o)
 					{
-						return std::to_string(x);
+						return "TODO";
 					}
 				}
 			}
 		}
 	};
-
-	void Grammar::dump()
-	{
-		std::cout << "--- Grammar::mapRules:" << std::endl;
-		for (auto& kv : Grammar::mapRules)
-		{
-			auto type = kv.first;
-			auto& rules = kv.second;
-
-			std::cout << "- " << type << std::endl;
-
-			for (auto& rule : rules)
-			{
-				if (!rule.name.empty())
-					std::cout << "  - name: " << rule.name << std::endl;
-				else
-					std::cout << "  - push: " << rule.push << std::endl;
-
-				std::cout << "  - names:";
-				for (auto& name : rule.names)
-				{
-					std::cout << " " << name;
-				}
-				std::cout << std::endl;
-
-				if (!rule.format.empty())
-					std::cout << "  - format: " << rule.format << std::endl;
-				else if (rule.formatFunc)
-					std::cout << "  - formatFunc(2): " << rule.formatFunc(2) << std::endl;
-			}
-		}
-	}
 }

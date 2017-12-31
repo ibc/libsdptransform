@@ -1,6 +1,5 @@
 #include "sdptransform.hpp"
 #include "Grammar.hpp"
-#include <iostream> // TODO: TMP
 #include <cstddef> // size_t
 #include <memory> // std::addressof()
 #include <sstream>
@@ -18,9 +17,6 @@ namespace sdptransform
 
 	bool parse(std::string& sdp, json& session)
 	{
-		// TODO: TMP
-		// Grammar::dump();
-
 		static const std::regex RegexSdpValidLine("^([a-z])=(.*)");
 
 		std::stringstream sdpstream(sdp);
@@ -69,9 +65,6 @@ namespace sdptransform
 					break;
 				}
 			}
-
-			// std::cout << " ---- " << type << "=" << content << " ----" << std::endl;
-			// std::cout << session.dump(2) << std::endl;
 		}
 
 		session["media"] = media; // Link it up.
