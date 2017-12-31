@@ -19,10 +19,10 @@ namespace sdptransform
 			std::regex reg;
 			std::vector<std::string> names;
 			std::string format;
-			std::function<std::string(nlohmann::json&)> formatFunc;
+			std::function<std::string(const nlohmann::json&)> formatFunc;
 		};
 
-		extern std::map<char, std::vector<Rule>> mapRules;
+		extern const std::map<char, std::vector<Rule>> mapRules;
 	}
 
 	inline nlohmann::json getEmptySession()
@@ -32,7 +32,7 @@ namespace sdptransform
 		return session;
 	}
 
-	void parse(std::string& sdp, nlohmann::json& session);
+	void parse(const std::string& sdp, nlohmann::json& session);
 
 	std::string write(nlohmann::json& session);
 }

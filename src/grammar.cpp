@@ -6,7 +6,7 @@ namespace sdptransform
 {
 	namespace grammar
 	{
-		std::map<char, std::vector<Rule>> mapRules =
+		const std::map<char, std::vector<Rule>> mapRules =
 		{
 			{
 				'v',
@@ -269,7 +269,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}
@@ -317,7 +317,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}
@@ -350,7 +350,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}
@@ -370,7 +370,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}
@@ -389,7 +389,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}
@@ -538,7 +538,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}
@@ -585,7 +585,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](json& o)
+						[](const json& o)
 						{
 							return "TODO";
 						}

@@ -1,28 +1,32 @@
 #include "sdptransform.hpp"
 #include <stdexcept>
 #include <cstddef> // size_t
-#include <memory> // std::addressof()
-#include <sstream>
-#include <regex>
+#include <memory>  // std::addressof()
+#include <sstream> // std::stringstream
 
 using json = nlohmann::json;
 
 namespace sdptransform
 {
-	void parseReg(grammar::Rule& rule, json& location, std::string& content);
+	void parseReg(const grammar::Rule& rule, json& location, const std::string& content);
 
 	void attachProperties(
-		std::smatch& match, json& location, std::vector<std::string>& names, std::string& rawName);
+		const std::smatch& match,
+		json& location,
+		const std::vector<std::string>& names,
+		const std::string& rawName
+	);
+
 	json toIntIfInt(const std::ssub_match& subMatch);
 
 	bool isNumber(const std::string& string);
 
-	void parse(std::string& sdp, json& session)
+	void parse(const std::string& sdp, json& session)
 	{
+		static const std::regex ValidLine("^([a-z])=(.*)");
+
 		if (!session.is_object())
 			throw std::invalid_argument("given session is not a JSON object");
-
-		static const std::regex RegexSdpValidLine("^([a-z])=(.*)");
 
 		std::stringstream sdpstream(sdp);
 		std::string line;
@@ -36,7 +40,7 @@ namespace sdptransform
 				line.pop_back();
 
 			// Ensure it's a valid SDP line.
-			if (!std::regex_match(line, RegexSdpValidLine))
+			if (!std::regex_match(line, ValidLine))
 				continue;
 
 			char type = line[0];
@@ -56,9 +60,9 @@ namespace sdptransform
 			if (grammar::mapRules.find(type) == grammar::mapRules.end())
 				continue;
 
-			for (int j = 0; j < grammar::mapRules[type].size(); ++j)
+			for (int j = 0; j < grammar::mapRules.at(type).size(); ++j)
 			{
-				auto& rule = grammar::mapRules[type][j];
+				auto& rule = grammar::mapRules.at(type)[j];
 
 				if (std::regex_match(content, rule.reg))
 				{
@@ -72,7 +76,7 @@ namespace sdptransform
 		session["media"] = media; // Link it up.
 	}
 
-	void parseReg(grammar::Rule& rule, json& location, std::string& content)
+	void parseReg(const grammar::Rule& rule, json& location, const std::string& content)
 	{
 		bool needsBlank = !rule.name.empty() && !rule.names.empty();
 
@@ -101,7 +105,11 @@ namespace sdptransform
 	}
 
 	void attachProperties(
-		std::smatch& match, json& location, std::vector<std::string>& names, std::string& rawName)
+		const std::smatch& match,
+		json& location,
+		const std::vector<std::string>& names,
+		const std::string& rawName
+	)
 	{
 		if (!rawName.empty() && names.empty())
 		{

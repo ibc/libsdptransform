@@ -1,8 +1,8 @@
 #include "sdptransform.hpp"
 #include <string>
 #include <iostream>
-#include <fstream>
-#include <streambuf>
+#include <fstream>   // std::ifstream
+#include <streambuf> // std::istreambuf_iterator
 
 int main(int argc, char* argv[])
 {
@@ -21,13 +21,11 @@ int main(int argc, char* argv[])
 
 	sdptransform::parse(sdp, session);
 
-	std::cout << session.dump(2) << std::endl;
+	// std::cout << session.dump(2) << std::endl;
 
 	auto newSdp = sdptransform::write(session);
 
-	std::cout << "sdptransform::write(session):" << std::endl << newSdp << std::endl;
-
-	std::cout << "DONE" << std::endl;
+	std::cout << "sdptransform::write(session):\n----\n" << newSdp << "----\n";
 
 	return 0;
 }
