@@ -1,7 +1,9 @@
 #include "sdptransform.hpp"
-#include <cstddef> // size_t
-#include <memory>  // std::addressof()
-#include <sstream> // std::stringstream, std::istringstream
+#include <cstddef>   // size_t
+#include <memory>    // std::addressof()
+#include <sstream>   // std::stringstream, std::istringstream
+#include <algorithm> // std::find_if()
+#include <locale>    // std::isspace()
 
 namespace sdptransform
 {
@@ -14,9 +16,13 @@ namespace sdptransform
 		const std::string& rawName
 	);
 
-	json toNumberIfNumber(const std::ssub_match& subMatch);
+	json toNumberIfNumber(const std::string& str);
 
 	bool isNumber(const std::string& str);
+
+	void trim(std::string &str);
+
+	void insertParam(json& o, const std::string& str);
 
 	json parse(const std::string& sdp)
 	{
@@ -73,6 +79,25 @@ namespace sdptransform
 		return session;
 	}
 
+	json parseParams(const std::string& str)
+	{
+		json params = json::object();
+		std::stringstream ss(str);
+		std::string param;
+
+		while (std::getline(ss, param, ';'))
+		{
+			trim(param);
+
+			if (param.length() == 0)
+				continue;
+
+			insertParam(params, param);
+		}
+
+		return params;
+	}
+
 	void parseReg(const grammar::Rule& rule, json& location, const std::string& content)
 	{
 		bool needsBlank = !rule.name.empty() && !rule.names.empty();
@@ -110,22 +135,20 @@ namespace sdptransform
 	{
 		if (!rawName.empty() && names.empty())
 		{
-			location[rawName] = toNumberIfNumber(match[1]);
+			location[rawName] = toNumberIfNumber(match[1].str());
 		}
 		else
 		{
 			for (size_t i = 0; i < names.size(); ++i)
 			{
 				if (i + 1 < match.size() && !match[i + 1].str().empty())
-					location[names[i]] = toNumberIfNumber(match[i + 1]);
+					location[names[i]] = toNumberIfNumber(match[i + 1].str());
 			}
 		}
 	}
 
-	json toNumberIfNumber(const std::ssub_match& subMatch)
+	json toNumberIfNumber(const std::string& str)
 	{
-		std::string str = subMatch.str();
-
 		// https://stackoverflow.com/a/447307/4827838.
 
 		// Test long long.
@@ -152,5 +175,37 @@ namespace sdptransform
 
 		// Otherwise return it as a string.
 		return str;
+	}
+
+	void trim(std::string &str)
+	{
+		str.erase(
+			str.begin(),
+			std::find_if(
+				str.begin(), str.end(), [](int ch) { return !std::isspace(ch); }
+			)
+		);
+
+		str.erase(
+			std::find_if(
+				str.rbegin(), str.rend(), [](int ch) { return !std::isspace(ch); }).base(),
+			str.end()
+		);
+	}
+
+	void insertParam(json& o, const std::string& str)
+	{
+		static const std::regex KeyValueRegex("^\\s*([^= ]+)\\s*=\\s*([^ ]+)$");
+
+		std::smatch match;
+
+		std::regex_match(str, match, KeyValueRegex);
+
+		// Wrong key value syntax.
+		if (match.size() != 3)
+			return;
+
+		// Insert into the given JSON object.
+		o[match[1].str()] = toNumberIfNumber(match[2].str());
 	}
 }

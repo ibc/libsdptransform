@@ -21,15 +21,22 @@ namespace sdptransform
 			std::regex reg;
 			std::vector<std::string> names;
 			std::string format;
-			std::function<const std::string(const nlohmann::json&)> formatFunc;
+			std::function<const std::string(const json&)> formatFunc;
 		};
 
 		extern const std::map<char, std::vector<Rule>> rulesMap;
 	}
 
-	nlohmann::json parse(const std::string& sdp);
+	json parse(const std::string& sdp);
 
-	std::string write(nlohmann::json& session);
+	json parseParams(const std::string& str);
+
+	inline json parseFmtpConfig(const std::string& str)
+	{
+		return parseParams(str);
+	}
+
+	std::string write(json& session);
 }
 
 #endif

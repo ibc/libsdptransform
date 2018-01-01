@@ -65,20 +65,18 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(video.at("rtp")[0].at("rate") == 90000);
 	REQUIRE(video.at("fmtp")[0].at("payload") == 97);
 
-	// TODO:
-	// auto vidFmtp = sdptransform::parseFmtpConfig(video.at("fmtp")[0].at("config"));
+	auto vidFmtp = sdptransform::parseFmtpConfig(video.at("fmtp")[0].at("config"));
 
-	// REQUIRE(vidFmtp.at("profile-level-id") == "4d0028");
-	// REQUIRE(vidFmtp.at("packetization-mode") == 1);
-	// REQUIRE(vidFmtp.at("sprop-parameter-sets") == "Z0IAH5WoFAFuQA==,aM48gA==");
+	REQUIRE(vidFmtp.at("profile-level-id") == "4d0028");
+	REQUIRE(vidFmtp.at("packetization-mode") == 1);
+	REQUIRE(vidFmtp.at("sprop-parameter-sets") == "Z0IAH5WoFAFuQA==,aM48gA==");
 
 	REQUIRE(video.at("fmtp")[1].at("payload") == 98);
 
-	// TODO:
-	// auto vidFmtp2 = sdptransform::parseFmtpConfig(video.at("fmtp")[1].at("config"));
+	auto vidFmtp2 = sdptransform::parseFmtpConfig(video.at("fmtp")[1].at("config"));
 
-	// REQUIRE(vidFmtp2.at("minptime") == 10);
-	// REQUIRE(vidFmtp2.at("useinbandfec") == 1);
+	REQUIRE(vidFmtp2.at("minptime") == 10);
+	REQUIRE(vidFmtp2.at("useinbandfec") == 1);
 
 	REQUIRE(video.at("rtp")[1].at("payload") == 98);
 	REQUIRE(video.at("rtp")[1].at("codec") == "VP8");
@@ -570,60 +568,58 @@ SCENARIO("simulcastSdp", "[parse]")
 		})"_json
 	);
 
-	// TODO
-
 	// // Test rid 1 params.
-	// auto rid1Params = sdptransform::parseParams(video.at("rids")[0].at("params"));
+	auto rid1Params = sdptransform::parseParams(video.at("rids")[0].at("params"));
 
-	// REQUIRE(
-	// 	rid1Params ==
-	// 	R"({
-	// 		"pt"         : 97,
-	// 		"max-width"  : 1280,
-	// 		"max-height" : 720,
-	// 		"max-fps"    : 30
-	// 	})"_json
-	// );
+	REQUIRE(
+		rid1Params ==
+		R"({
+			"pt"         : 97,
+			"max-width"  : 1280,
+			"max-height" : 720,
+			"max-fps"    : 30
+		})"_json
+	);
 
-	// // Test rid 2 params.
-	// auto rid2Params = sdptransform::parseParams(video.at("rids")[1].at("params"));
+	// Test rid 2 params.
+	auto rid2Params = sdptransform::parseParams(video.at("rids")[1].at("params"));
 
-	// REQUIRE(
-	// 	rid2Params ==
-	// 	R"({
-	// 		"pt" : 98
-	// 	})"_json
-	// );
+	REQUIRE(
+		rid2Params ==
+		R"({
+			"pt" : 98
+		})"_json
+	);
 
-	// // Test rid 3 params.
-	// auto rid3Params = sdptransform::parseParams(video.at("rids")[2].at("params"));
+	// Test rid 3 params.
+	auto rid3Params = sdptransform::parseParams(video.at("rids")[2].at("params"));
 
-	// REQUIRE(
-	// 	rid3Params ==
-	// 	R"({
-	// 		"pt" : 99
-	// 	})"_json
-	// );
+	REQUIRE(
+		rid3Params ==
+		R"({
+			"pt" : 99
+		})"_json
+	);
 
-	// // Test rid 4 params.
-	// auto rid4Params = sdptransform::parseParams(video.at("rids")[3].at("params"));
+	// Test rid 4 params.
+	auto rid4Params = sdptransform::parseParams(video.at("rids")[3].at("params"));
 
-	// REQUIRE(
-	// 	rid4Params ==
-	// 	R"({
-	// 		"pt" : 100
-	// 	})"_json
-	// );
+	REQUIRE(
+		rid4Params ==
+		R"({
+			"pt" : 100
+		})"_json
+	);
 
-	// // Test rid 5 params.
-	// auto rid5Params = sdptransform::parseParams(video.at("rids")[4].at("params"));
+	// Test rid 5 params.
+	auto rid5Params = sdptransform::parseParams(video.at("rids")[4].at("params"));
 
-	// REQUIRE(
-	// 	rid5Params ==
-	// 	R"({
-	// 		"pt" : 97
-	// 	})"_json
-	// );
+	REQUIRE(
+		rid5Params ==
+		R"({
+			"pt" : 97
+		})"_json
+	);
 
 	// Test imageattr lines.
 	REQUIRE(video.at("imageattrs").size() == 5);
