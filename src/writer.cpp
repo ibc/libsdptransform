@@ -3,8 +3,6 @@
 #include <sstream>   // std::stringstream
 #include <stdexcept>
 
-using json = nlohmann::json;
-
 namespace sdptransform
 {
 	void makeLine(

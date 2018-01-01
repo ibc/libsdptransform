@@ -247,6 +247,6 @@ SCENARIO("hackySdp", "[parse]")
 	REQUIRE(media[2].at("sctpmap").at("maxMessageSize") == 1024);
 
 	// Verify a=framerate:29.97.
-	// TODO: Fix this.
-	// REQUIRE(media[2].at("framerate") == 29.97);
+	REQUIRE(media[1].at("framerate") == 1234);
+	REQUIRE(media[2].at("framerate") == double{ 29.97 });
 }

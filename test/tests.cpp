@@ -1,7 +1,6 @@
 #define CATCH_CONFIG_RUNNER
 
 #include "sdptransform.hpp"
-#include "include/helpers.hpp"
 #include "include/catch.hpp"
 
 int main(int argc, char* argv[])

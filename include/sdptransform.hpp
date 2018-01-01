@@ -8,6 +8,8 @@
 #include <regex>
 #include <functional>
 
+using json = nlohmann::json;
+
 namespace sdptransform
 {
 	namespace grammar

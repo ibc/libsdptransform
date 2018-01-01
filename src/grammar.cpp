@@ -1,7 +1,5 @@
 #include "sdptransform.hpp"
 
-using json = nlohmann::json;
-
 namespace sdptransform
 {
 	namespace grammar

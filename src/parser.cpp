@@ -1,9 +1,7 @@
 #include "sdptransform.hpp"
 #include <cstddef> // size_t
 #include <memory>  // std::addressof()
-#include <sstream> // std::stringstream
-
-using json = nlohmann::json;
+#include <sstream> // std::stringstream, std::istringstream
 
 namespace sdptransform
 {
@@ -16,9 +14,9 @@ namespace sdptransform
 		const std::string& rawName
 	);
 
-	json toIntIfInt(const std::ssub_match& subMatch);
+	json toNumberIfNumber(const std::ssub_match& subMatch);
 
-	bool isNumber(const std::string& string);
+	bool isNumber(const std::string& str);
 
 	json parse(const std::string& sdp)
 	{
@@ -112,43 +110,47 @@ namespace sdptransform
 	{
 		if (!rawName.empty() && names.empty())
 		{
-			location[rawName] = toIntIfInt(match[1]);
+			location[rawName] = toNumberIfNumber(match[1]);
 		}
 		else
 		{
 			for (size_t i = 0; i < names.size(); ++i)
 			{
 				if (i + 1 < match.size() && !match[i + 1].str().empty())
-					location[names[i]] = toIntIfInt(match[i + 1]);
+					location[names[i]] = toNumberIfNumber(match[i + 1]);
 			}
 		}
 	}
 
-	json toIntIfInt(const std::ssub_match& subMatch)
+	json toNumberIfNumber(const std::ssub_match& subMatch)
 	{
-		auto string = subMatch.str();
+		std::string str = subMatch.str();
 
-		if (!isNumber(string))
-			return string;
+		// https://stackoverflow.com/a/447307/4827838.
 
-		try
+		// Test long long.
 		{
-			return std::stoll(string);
-		}
-		catch (const std::exception& error)
-		{
-			return string;
-		}
-	}
+			std::istringstream iss(str);
+			long long ll;
 
-	bool isNumber(const std::string& string)
-	{
-		return (
-			!string.empty() &&
-			std::find_if(
-				string.begin(),
-				string.end(),
-				[](char c) { return !std::isdigit(c); }) == string.end()
-		);
+			iss >> std::noskipws >> ll;
+
+			if (iss.eof() && !iss.fail())
+				return std::stoll(str);
+		}
+
+		// Test double.
+		{
+			std::istringstream iss(str);
+			double d;
+
+			iss >> std::noskipws >> d;
+
+			if (iss.eof() && !iss.fail())
+				return std::stod(str);
+		}
+
+		// Otherwise return it as a string.
+		return str;
 	}
 }
