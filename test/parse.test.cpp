@@ -755,33 +755,29 @@ SCENARIO("simulcastSdp", "[parse]")
 		})"_json
 	);
 
-	// TODO
+	// Test simulcast send streams.
+	auto simulcastSendStreams =
+		sdptransform::parseSimulcastStreamList(video.at("simulcast").at("list1"));
 
-	// // Test simulcast send streams.
-	// auto simulcastSendStreams =
-	// 	sdptransform::parseSimulcastStreamList(video.at("simulcast").at("list1"));
+	REQUIRE(
+		simulcastSendStreams ==
+		R"([
+			[ { "scid": 1, "paused": false }, { "scid": 4, "paused": true } ],
+			[ { "scid": 2, "paused": false } ],
+			[ { "scid": 3, "paused": false } ]
+		])"_json
+	);
 
-	// REQUIRE(
-	// 	simulcastSendStreams ==
-	// 	R"([
-	// 		[ { "scid": 1, "paused": false }, { "scid": 4, "paused": true } ],
-	// 		[ { "scid": 2, "paused": false } ],
-	// 		[ { "scid": 3, "paused": false } ]
-	// 	])"_json
-	// );
+	// Test simulcast recv streams.
+	auto simulcastRecvStreams =
+		sdptransform::parseSimulcastStreamList(video.at("simulcast").at("list2"));
 
-	// // Test simulcast recv streams.
-	// auto simulcastRecvStreams =
-	// 	sdptransform::parseSimulcastStreamList(video.at("simulcast").at("list2"));
-
-	// REQUIRE(
-	// 	simulcastRecvStreams ==
-	// 	R"([
-	// 		[ { "scid": "c", "paused": false } ]
-	// 	])"_json
-	// );
-
-	// TODO
+	REQUIRE(
+		simulcastRecvStreams ==
+		R"([
+			[ { "scid": "c", "paused": false } ]
+		])"_json
+	);
 
 	// Test simulcast version 03 line.
 	REQUIRE(

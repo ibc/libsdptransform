@@ -38,6 +38,8 @@ namespace sdptransform
 
 	json parseImageAttributes(const std::string& str);
 
+	json parseSimulcastStreamList(const std::string& str);
+
 	std::string write(json& session);
 }
 

@@ -135,6 +135,48 @@ namespace sdptransform
 		return arr;
 	}
 
+	json parseSimulcastStreamList(const std::string& str)
+	{
+		json arr = json::array();
+		std::stringstream ss(str);
+		std::string item;
+
+		while (std::getline(ss, item, ';'))
+		{
+			if (item.length() == 0)
+				continue;
+
+			json arr2 = json::array();
+			std::stringstream ss2(item);
+			std::string format;
+
+			while (std::getline(ss2, format, ','))
+			{
+				if (format.length() == 0)
+					continue;
+
+				json obj = json::object();
+
+				if (format[0] != '~')
+				{
+					obj["scid"] = toNumberIfNumber(format);
+					obj["paused"] = false;
+				}
+				else
+				{
+					obj["scid"] = toNumberIfNumber(format.substr(1));
+					obj["paused"] = true;
+				}
+
+				arr2.push_back(obj);
+			}
+
+			arr.push_back(arr2);
+		}
+
+		return arr;
+	}
+
 	void parseReg(const grammar::Rule& rule, json& location, const std::string& content)
 	{
 		bool needsBlank = !rule.name.empty() && !rule.names.empty();
