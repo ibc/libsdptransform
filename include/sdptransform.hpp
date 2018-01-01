@@ -25,14 +25,7 @@ namespace sdptransform
 		extern const std::map<char, std::vector<Rule>> rulesMap;
 	}
 
-	inline nlohmann::json getEmptySession()
-	{
-		nlohmann::json session{ nlohmann::json::object() };
-
-		return session;
-	}
-
-	void parse(const std::string& sdp, nlohmann::json& session);
+	nlohmann::json parse(const std::string& sdp);
 
 	std::string write(nlohmann::json& session);
 }

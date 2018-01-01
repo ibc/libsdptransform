@@ -275,7 +275,7 @@ namespace sdptransform
 						{
 							return hasValue(o, "encoding") ?
 								"rtpmap:%d %s/%s/%s" :
-								o.find("rate") != o.end() ?
+								hasValue(o, "rate") ?
 									"rtpmap:%d %s/%s" :
 									"rtpmap:%d %s";
 						}

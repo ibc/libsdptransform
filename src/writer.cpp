@@ -1,12 +1,18 @@
 #include "sdptransform.hpp"
-#include <cstddef> // size_t
-#include <sstream> // std::stringstream
+#include <cstddef>   // size_t
+#include <sstream>   // std::stringstream
+#include <stdexcept>
 
 using json = nlohmann::json;
 
 namespace sdptransform
 {
-	const std::string makeLine(char type, const grammar::Rule& rule, const json& location);
+	void makeLine(
+		std::stringstream& sdpstream,
+		char type,
+		const grammar::Rule& rule,
+		const json& location
+	);
 
 	std::string write(json& session)
 	{
@@ -49,7 +55,7 @@ namespace sdptransform
 					!session[rule.name].is_null()
 				)
 				{
-					sdpstream << makeLine(type, rule, session);
+					makeLine(sdpstream, type, rule, session);
 				}
 				else if (
 					!rule.push.empty() &&
@@ -59,7 +65,7 @@ namespace sdptransform
 				{
 					for (auto& el : session.at(rule.push))
 					{
-						sdpstream << makeLine(type, rule, el);
+						makeLine(sdpstream, type, rule, el);
 					}
 				}
 			}
@@ -68,7 +74,7 @@ namespace sdptransform
 		// Then for each media line, follow the InnerOrder.
 		for (auto& mLine : session.at("media"))
 		{
-			sdpstream << makeLine('m', grammar::rulesMap.at('m')[0], mLine);
+			makeLine(sdpstream, 'm', grammar::rulesMap.at('m')[0], mLine);
 
 			for (auto type : InnerOrder)
 			{
@@ -80,7 +86,7 @@ namespace sdptransform
 						!mLine[rule.name].is_null()
 					)
 					{
-						sdpstream << makeLine(type, rule, mLine);
+						makeLine(sdpstream, type, rule, mLine);
 					}
 					else if (
 						!rule.push.empty() &&
@@ -90,7 +96,7 @@ namespace sdptransform
 					{
 						for (auto& el : mLine.at(rule.push))
 						{
-							sdpstream << makeLine(type, rule, el);
+							makeLine(sdpstream, type, rule, el);
 						}
 					}
 				}
@@ -100,7 +106,12 @@ namespace sdptransform
 		return sdpstream.str();
 	}
 
-	const std::string makeLine(char type, const grammar::Rule& rule, const json& location)
+	void makeLine(
+		std::stringstream& sdpstream,
+		char type,
+		const grammar::Rule& rule,
+		const json& location
+	)
 	{
 		static const std::regex FormatRegex("%[sdv%]");
 
@@ -114,13 +125,27 @@ namespace sdptransform
 		{
 			for (auto& name : rule.names)
 			{
-				if (!rule.name.empty())
+				if (
+					!rule.name.empty() &&
+					location.find(rule.name) != location.end() &&
+					location.at(rule.name).find(name) != location.at(rule.name).end()
+				)
+				{
 					args.push_back(location.at(rule.name).at(name));
-				else // For mLine and push attributes.
+				}
+				// For mLine and push attributes.
+				else if (location.find(name) != location.end())
+				{
 					args.push_back(location.at(name));
+				}
+				// NOTE: Otherwise ensure an empty value is inserted into args array.
+				else
+				{
+					args.push_back("");
+				}
 			}
 		}
-		else
+		else if (location.find(rule.name) != location.end())
 		{
 			args.push_back(location.at(rule.name));
 		}
@@ -175,6 +200,6 @@ namespace sdptransform
 
 		linestream << "\r\n";
 
-		return linestream.str();
+		sdpstream << linestream.str();
 	}
 }

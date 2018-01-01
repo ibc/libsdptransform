@@ -1,5 +1,4 @@
 #include "sdptransform.hpp"
-#include <stdexcept>
 #include <cstddef> // size_t
 #include <memory>  // std::addressof()
 #include <sstream> // std::stringstream
@@ -21,13 +20,11 @@ namespace sdptransform
 
 	bool isNumber(const std::string& string);
 
-	void parse(const std::string& sdp, json& session)
+	json parse(const std::string& sdp)
 	{
 		static const std::regex ValidLineRegex("^([a-z])=(.*)");
 
-		if (!session.is_object())
-			throw std::invalid_argument("given session is not a JSON object");
-
+		json session = json::object();
 		std::stringstream sdpstream(sdp);
 		std::string line;
 		json media = json::array();
@@ -74,6 +71,8 @@ namespace sdptransform
 		}
 
 		session["media"] = media; // Link it up.
+
+		return session;
 	}
 
 	void parseReg(const grammar::Rule& rule, json& location, const std::string& content)
@@ -119,7 +118,7 @@ namespace sdptransform
 		{
 			for (size_t i = 0; i < names.size(); ++i)
 			{
-				if (i + 1 < match.size())
+				if (i + 1 < match.size() && !match[i + 1].str().empty())
 					location[names[i]] = toIntIfInt(match[i + 1]);
 			}
 		}

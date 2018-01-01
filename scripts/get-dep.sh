@@ -2,12 +2,12 @@
 
 set -e
 
-WORKER_PWD=${PWD}
+PROJECT_PWD=${PWD}
 DEP=$1
 
-current_dir_name=${WORKER_PWD##*/}
-if [ "${current_dir_name}" != "sdp-transform-c" ] ; then
-	echo ">>> [ERROR] $(basename $0) must be called from sdp-transform-c/ root directory" >&2
+current_dir_name=${PROJECT_PWD##*/}
+if [ "${current_dir_name}" != "libsdptransform" ] ; then
+	echo ">>> [ERROR] $(basename $0) must be called from libsdptransform/ root directory" >&2
 	exit 1
 fi
 
@@ -40,7 +40,7 @@ function get_dep()
 
 	echo ">>> [INFO] got dep '${DEP}'"
 
-	cd ${WORKER_PWD}
+	cd ${PROJECT_PWD}
 }
 
 function get_json()
@@ -55,14 +55,29 @@ function get_json()
 	cp ${DEST}/src/json.hpp include/
 }
 
+function get_catch()
+{
+	GIT_REPO="https://github.com/philsquared/Catch.git"
+	GIT_TAG="v1.11.0"
+	DEST="deps/catch"
+
+	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
+
+	echo ">>> [INFO] copying include file to test/include/ directory ..."
+	cp ${DEST}/single_include/catch.hpp test/include/
+}
+
 case "${DEP}" in
 	'-h')
 		echo "Usage:"
-		echo "  ./scripts/$(basename $0) [json]"
+		echo "  ./scripts/$(basename $0) [json|catch]"
 		echo
 		;;
 	json)
 		get_json
+		;;
+	catch)
+		get_catch
 		;;
 	*)
 		echo ">>> [ERROR] unknown dep '${DEP}'" >&2
