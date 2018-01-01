@@ -18,4 +18,4 @@ set(
 
 add_library(sdptransform STATIC ${SOURCE_FILES})
 
-subdirs(test)
+subdirs(test readme-helper)

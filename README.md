@@ -1,11 +1,362 @@
 # libsdptransform
 
-Session Description Protocol parser/writer exposing an C++ API similar to the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library.
+C++ version of the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library exposesing the same API.
+
+**libsdptransform** is a simple parser and writer of SDP. Defines internal grammar based on [RFC4566 - SDP](http://tools.ietf.org/html/rfc4566), [RFC5245 - ICE](http://tools.ietf.org/html/rfc5245), and many more.
+
+For simplicity it will force values that are integers to integers and leave everything else as strings when parsing. The module should be simple to extend or build upon, and is constructed rigorously.
+
+
+## Usage
+
+```c++
+#include "sdptransform.hpp"
+```
+
+The **libsdptransform** API is exposed on the `sdptransform` C++ namespace.
+
+**libsdptransform** integrates the [JSON for Modern C++](https://github.com/nlohmann/json/) library and exposes it under the `json` C++ namespace. All the API functions expect and/or return a `json` object.
+
+
+### This is not JavaScript!
+
+It's important to recall that this is not JavaScript but C++. Operations that are safe on a JavaScript `Object` may not be safe in a C++ `json` instance.
+
+So, before reading a JSON value, make sure that its corresponding `key` **does** exit and also check the value type (`int`, `std::string`, `nullptr`, etc) before assigning it to a C++ variable.
+
+* For example, assuming that the parsed SDP `session` does NOT have a `s=` line (name), the following code would crash:
+
+```c++
+session.at("name");
+// =>
+// terminating with uncaught exception of type nlohmann::detail::out_of_range:
+// [json.exception.out_of_range.403] key 'name' not found
+```
+
+* Now, assuming the SDP has `s=1234`, the following would also crash (since we are assuming that the value is a string):
+
+```c++
+std::string sdpName = session.at("name");
+// => 
+// terminating with uncaught exception of type nlohmann::detail::type_error:
+// [json.exception.type_error.302] type must be string, but is number
+```
+
+* The safe way to retrieve it is:
+
+```c++
+if (session.find("name") != session.end())
+{
+  auto& name = session.at("name");
+
+  if (name.is_string())
+    sdpName = name;
+  else if (name.is_number())
+    sdpName = std::to_string(name.get<int>());
+}
+```
+
+* Also, as in C++ maps, using the `[]` operator on a `json` object for reading the value of a given `key` will insert such a `key` in the `json` object wih value `nullptr`.
+
+It's **strongly** recommended to read the corresponding [`json` documentation](https://github.com/nlohmann/json/).
+
+
+## Usage - Parser
+
+Load it and pass it an unprocessed SDP string (lines can be terminated on `\r\n` as per specification, or just `\n`).
+
+```c++
+std::string sdpStr = R"(v=0
+o=- 20518 0 IN IP4 203.0.113.1
+s=
+t=0 0
+c=IN IP4 203.0.113.1
+a=ice-ufrag:F7gI
+a=ice-pwd:x9cml/YzichV2+XlhiMu8g
+a=fingerprint:sha-1 42:89:c5:c6:55:9d:6e:c8:e8:83:55:2a:39:f9:b6:eb:e9:a3:a9:e7
+m=audio 54400 RTP/SAVPF 0 96
+a=rtpmap:0 PCMU/8000
+a=rtpmap:96 opus/48000
+a=ptime:20
+a=sendrecv
+a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
+a=candidate:1 2 UDP 2113667326 203.0.113.1 54401 typ host
+m=video 55400 RTP/SAVPF 97 98
+a=rtpmap:97 H264/90000
+a=fmtp:97 profile-level-id=4d0028;packetization-mode=1
+a=rtpmap:98 VP8/90000
+a=sendrecv
+a=candidate:0 1 UDP 2113667327 203.0.113.1 55400 typ host
+a=candidate:1 2 UDP 2113667326 203.0.113.1 55401 typ host
+)";
+
+json session = sdptransform::parse(sdpStr);
+```
+
+`session` is a JSON object as follows:
+
+```json
+{
+  "connection": {
+    "ip": "203.0.113.1",
+    "version": 4
+  },
+  "fingerprint": {
+    "hash": "42:89:c5:c6:55:9d:6e:c8:e8:83:55:2a:39:f9:b6:eb:e9:a3:a9:e7",
+    "type": "sha-1"
+  },
+  "icePwd": "x9cml/YzichV2+XlhiMu8g",
+  "iceUfrag": "F7gI",
+  "media": [
+    {
+      "candidates": [
+        {
+          "component": 1,
+          "foundation": 0,
+          "ip": "203.0.113.1",
+          "port": 54400,
+          "priority": 2113667327,
+          "transport": "UDP",
+          "type": "host"
+        },
+        {
+          "component": 2,
+          "foundation": 1,
+          "ip": "203.0.113.1",
+          "port": 54401,
+          "priority": 2113667326,
+          "transport": "UDP",
+          "type": "host"
+        }
+      ],
+      "direction": "sendrecv",
+      "fmtp": [],
+      "payloads": "0 96",
+      "port": 54400,
+      "protocol": "RTP/SAVPF",
+      "ptime": 20,
+      "rtp": [
+        {
+          "codec": "PCMU",
+          "payload": 0,
+          "rate": 8000
+        },
+        {
+          "codec": "opus",
+          "payload": 96,
+          "rate": 48000
+        }
+      ],
+      "type": "audio"
+    },
+    {
+      "candidates": [
+        {
+          "component": 1,
+          "foundation": 0,
+          "ip": "203.0.113.1",
+          "port": 55400,
+          "priority": 2113667327,
+          "transport": "UDP",
+          "type": "host"
+        },
+        {
+          "component": 2,
+          "foundation": 1,
+          "ip": "203.0.113.1",
+          "port": 55401,
+          "priority": 2113667326,
+          "transport": "UDP",
+          "type": "host"
+        }
+      ],
+      "direction": "sendrecv",
+      "fmtp": [
+        {
+          "config": "profile-level-id=4d0028;packetization-mode=1",
+          "payload": 97
+        }
+      ],
+      "payloads": "97 98",
+      "port": 55400,
+      "protocol": "RTP/SAVPF",
+      "rtp": [
+        {
+          "codec": "H264",
+          "payload": 97,
+          "rate": 90000
+        },
+        {
+          "codec": "VP8",
+          "payload": 98,
+          "rate": 90000
+        }
+      ],
+      "type": "video"
+    }
+  ],
+  "name": "",
+  "origin": {
+    "address": "203.0.113.1",
+    "ipVer": 4,
+    "netType": "IN",
+    "sessionId": 20518,
+    "sessionVersion": 0,
+    "username": "-"
+  },
+  "timing": {
+    "start": 0,
+    "stop": 0
+  },
+  "version": 0
+}
+```
+
+In this example, only slightly dodgy string coercion case here is for `session.at("media")[i].at("candidates")[i].at("foundation")`, which can be a string, but in this case can be equally parsed as an integer.
+
+
+### Parser Postprocessing
+
+No excess parsing is done to the raw strings apart from maybe coercing to ints, because the writer is built to be the inverse of the parser. That said, a few helpers have been built in:
+
+
+#### parseParams()
+
+Parses `fmtp.at("config")` and others such as `rid.at("params")` and returns an object with all the params in a key/value fashion.
+
+```c++
+json params =
+  sdptransform::parseParams(session.at("media")[1].at("fmtp")[0].at("config"));
+```
+
+`params` is a JSON object as follows:
+
+```json
+{
+  "packetization-mode": 1,
+  "profile-level-id": "4d0028"
+}
+```
+
+
+#### parsePayloads()
+
+Returns an array with all the payload advertised in the main m-line.
+
+```c++
+json payloads =
+  sdptransform::parsePayloads(session.at("media")[1].at("payloads"));
+```
+
+`payloads` is a JSON array as follows:
+
+```json
+[ 97, 98 ]
+```
+
+
+#### parseImageAttributes()
+
+Parses [Generic Image Attributes](https://tools.ietf.org/html/rfc6236). Must be provided with the `attrs1` or `attrs2` string of a `a=imageattr` line. Returns an array of key/value objects.
+
+```c++
+// a=imageattr:97 send [x=1280,y=720] recv [x=1280,y=720] [x=320,y=180]
+
+std::string imageAttributesStr = "[x=1280,y=720] [x=320,y=180]";
+
+json imageAttributes = sdptransform::parseImageAttributes(imageAttributesStr);
+```
+
+`imageAttributes` is a JSON array as follows:
+
+```json
+[
+  { "x": 1280, "y": 720 },
+  { "x":  320, "y": 180 }
+]
+```
+
+
+#### parseSimulcastStreamList()
+
+Parses [simulcast](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast) streams/formats. Must be provided with the `attrs1` or `attrs2` string of the `a=simulcast` line.
+
+Returns an array of simulcast streams. Each entry is an array of alternative simulcast formats, which are objects with two keys:
+
+* `scid`: Simulcast identifier
+* `paused`: Whether the simulcast format is paused
+
+```c++
+// // a=simulcast:send 1,~4;2;3 recv c
+std::string simulcastAttributesStr = "1,~4;2;3";
+
+json simulcastAttributes =
+  sdptransform::parseSimulcastStreamList(simulcastAttributesStr);
+```
+
+`simulcastAttributes` is a JSON array as follows:
+
+```json
+[
+  // First simulcast stream (two alternative formats)
+  [ { "paused": false, "scid": 1 }, { "paused": true, "scid": 4 } ],
+  // Second simulcast stream
+  [ { "paused": false, "scid": 2 } ],
+  // Third simulcast stream
+  [ { "paused": false, "scid": 3 } ]
+]
+```
+
+
+## Usage - Writer
+
+The writer is the inverse of the parser, and will need a struct equivalent to the one returned by it.
+
+```c++
+// session parsed above
+std::string newSdpStr = sdptransform::write(session);
+```
+
+`newSdpStr` is a string as follows:
+
+```
+v=0
+o=- 20518 0 IN IP4 203.0.113.1
+s=
+c=IN IP4 203.0.113.1
+t=0 0
+a=ice-ufrag:F7gI
+a=ice-pwd:x9cml/YzichV2+XlhiMu8g
+a=fingerprint:sha-1 42:89:c5:c6:55:9d:6e:c8:e8:83:55:2a:39:f9:b6:eb:e9:a3:a9:e7
+m=audio 54400 RTP/SAVPF 0 96
+a=rtpmap:0 PCMU/8000
+a=rtpmap:96 opus/48000
+a=ptime:20
+a=sendrecv
+a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
+a=candidate:1 2 UDP 2113667326 203.0.113.1 54401 typ host
+m=video 55400 RTP/SAVPF 97 98
+a=rtpmap:97 H264/90000
+a=rtpmap:98 VP8/90000
+a=fmtp:97 profile-level-id=4d0028;packetization-mode=1
+a=sendrecv
+a=candidate:0 1 UDP 2113667327 203.0.113.1 55400 typ host
+a=candidate:1 2 UDP 2113667326 203.0.113.1 55401 typ host
+```
+
+The only thing different from the original input is we follow the order specified by the SDP RFC, and we will always do so.
+
+
+## Installation
+
+*TBD*
 
 
 ## Author
 
-* Iñaki Baz Castillo [[website](https://inakibaz.me)|[github](https://github.com/ibc/)]
+Iñaki Baz Castillo [[website](https://inakibaz.me)|[github](https://github.com/ibc/)]
+
+Special thanks to [Eirik Albrigtsen](https://github.com/clux) for creating sdp-transform](https://github.com/clux/sdp-transform/).
 
 
 ## License
