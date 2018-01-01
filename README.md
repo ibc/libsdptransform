@@ -323,11 +323,8 @@ Resulting `simulcastAttributes` is a JSON array as follows:
 
 ```json
 [
-  // First simulcast stream (two alternative formats)
   [ { "paused": false, "scid": 1 }, { "paused": true, "scid": 4 } ],
-  // Second simulcast stream
   [ { "paused": false, "scid": 2 } ],
-  // Third simulcast stream
   [ { "paused": false, "scid": 3 } ]
 ]
 ```
