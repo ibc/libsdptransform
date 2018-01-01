@@ -15,12 +15,12 @@ For simplicity it will force values that are integers to integers and leave ever
 
 The **libsdptransform** API is exposed on the `sdptransform` C++ namespace.
 
-**libsdptransform** integrates the [JSON for Modern C++](https://github.com/nlohmann/json/) library and exposes it under the `json` C++ namespace. All the API functions expect and/or return a `json` object.
+**libsdptransform** integrates the [JSON for Modern C++](https://github.com/nlohmann/json/) library and exposes it under the `json` C++ namespace. All the API functions expect and/or return a JSON object.
 
 
 ### This is not JavaScript!
 
-It's important to recall that this is not JavaScript but C++. Operations that are safe on a JavaScript `Object` may not be safe in a C++ `json` instance.
+It's important to recall that this is not JavaScript but C++. Operations that are safe on a JavaScript `Object` may not be safe in a C++ JSON object.
 
 So, before reading a JSON value, make sure that its corresponding `key` **does** exit and also check the value type (`int`, `std::string`, `nullptr`, etc) before assigning it to a C++ variable.
 
@@ -56,14 +56,21 @@ if (session.find("name") != session.end())
 }
 ```
 
-* Also, as in C++ maps, using the `[]` operator on a `json` object for reading the value of a given `key` will insert such a `key` in the `json` object wih value `nullptr`.
+* Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object wih value `nullptr` (if it did not exist before).
 
-It's **strongly** recommended to read the corresponding [`json` documentation](https://github.com/nlohmann/json/).
+So, it's **strongly** recommended to read the corresponding [JSON documentation](https://github.com/nlohmann/json/).
 
 
 ## Usage - Parser
 
-Load it and pass it an unprocessed SDP string (lines can be terminated on `\r\n` as per specification, or just `\n`).
+
+### parse()
+
+Syntax:
+
+* `json parse(const std::string& sdp)`
+
+Parses the unprocessed SDP string and returns a JSON object. SDP lines can be terminated on `\r\n` (as per specification) or just `\n`.
 
 ```c++
 std::string sdpStr = R"(v=0
@@ -93,7 +100,7 @@ a=candidate:1 2 UDP 2113667326 203.0.113.1 55401 typ host
 json session = sdptransform::parse(sdpStr);
 ```
 
-`session` is a JSON object as follows:
+Resulting `session` is a JSON object as follows:
 
 ```json
 {
@@ -222,6 +229,10 @@ No excess parsing is done to the raw strings apart from maybe coercing to ints, 
 
 #### parseParams()
 
+Syntax:
+
+* `json parseParams(const std::string& str)`
+
 Parses `fmtp.at("config")` and others such as `rid.at("params")` and returns an object with all the params in a key/value fashion.
 
 ```c++
@@ -229,7 +240,7 @@ json params =
   sdptransform::parseParams(session.at("media")[1].at("fmtp")[0].at("config"));
 ```
 
-`params` is a JSON object as follows:
+Resulting `params` is a JSON object as follows:
 
 ```json
 {
@@ -241,6 +252,12 @@ json params =
 
 #### parsePayloads()
 
+Syntax:
+
+* `json parsePayloads(const std::string& str)`
+* `json parsePayloads(int number);`
+* `json parsePayloads(const json& value)`
+
 Returns an array with all the payload advertised in the main m-line.
 
 ```c++
@@ -248,7 +265,7 @@ json payloads =
   sdptransform::parsePayloads(session.at("media")[1].at("payloads"));
 ```
 
-`payloads` is a JSON array as follows:
+Resulting `payloads` is a JSON array as follows:
 
 ```json
 [ 97, 98 ]
@@ -256,6 +273,10 @@ json payloads =
 
 
 #### parseImageAttributes()
+
+Syntax:
+
+* `json parseImageAttributes(const std::string& str)`
 
 Parses [Generic Image Attributes](https://tools.ietf.org/html/rfc6236). Must be provided with the `attrs1` or `attrs2` string of a `a=imageattr` line. Returns an array of key/value objects.
 
@@ -267,7 +288,7 @@ std::string imageAttributesStr = "[x=1280,y=720] [x=320,y=180]";
 json imageAttributes = sdptransform::parseImageAttributes(imageAttributesStr);
 ```
 
-`imageAttributes` is a JSON array as follows:
+Resulting `imageAttributes` is a JSON array as follows:
 
 ```json
 [
@@ -278,6 +299,10 @@ json imageAttributes = sdptransform::parseImageAttributes(imageAttributesStr);
 
 
 #### parseSimulcastStreamList()
+
+Syntax:
+
+* `json parseSimulcastStreamList(const std::string& str)`
 
 Parses [simulcast](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast) streams/formats. Must be provided with the `attrs1` or `attrs2` string of the `a=simulcast` line.
 
@@ -294,7 +319,7 @@ json simulcastAttributes =
   sdptransform::parseSimulcastStreamList(simulcastAttributesStr);
 ```
 
-`simulcastAttributes` is a JSON array as follows:
+Resulting `simulcastAttributes` is a JSON array as follows:
 
 ```json
 [
@@ -310,14 +335,20 @@ json simulcastAttributes =
 
 ## Usage - Writer
 
+
+### write()
+
+Syntax:
+
+* `std::string write(json& session)`
+
 The writer is the inverse of the parser, and will need a struct equivalent to the one returned by it.
 
 ```c++
-// session parsed above
-std::string newSdpStr = sdptransform::write(session);
+std::string newSdpStr = sdptransform::write(session); // session parsed above
 ```
 
-`newSdpStr` is a string as follows:
+Resulting `newSdpStr` is a string as follows:
 
 ```
 v=0
@@ -356,7 +387,7 @@ The only thing different from the original input is we follow the order specifie
 
 Iñaki Baz Castillo [[website](https://inakibaz.me)|[github](https://github.com/ibc/)]
 
-Special thanks to [Eirik Albrigtsen](https://github.com/clux) for creating sdp-transform](https://github.com/clux/sdp-transform/).
+Special thanks to [Eirik Albrigtsen](https://github.com/clux), the author of sdp-transform](https://github.com/clux/sdp-transform/).
 
 
 ## License
