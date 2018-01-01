@@ -27,6 +27,9 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(session.at("icePwd") == "x9cml/YzichV2+XlhiMu8g");
 
 	auto& audio = media[0];
+	auto audioPayloads = sdptransform::parsePayloads(audio.at("payloads"));
+
+	REQUIRE(audioPayloads == R"([ 0, 96 ])"_json);
 
 	REQUIRE(audio.at("type") == "audio");
 	REQUIRE(audio.at("port") == 54400);
@@ -55,6 +58,9 @@ SCENARIO("normalSdp", "[parse]")
 	);
 
 	auto& video = media[1];
+	auto videoPayloads = sdptransform::parsePayloads(video.at("payloads"));
+
+	REQUIRE(videoPayloads == R"([ 97, 98 ])"_json);
 
 	REQUIRE(video.at("type") == "video");
 	REQUIRE(video.at("port") == 55400);
@@ -420,6 +426,9 @@ SCENARIO("alacSdp", "[parse]")
 
 	auto& media = session.at("media");
 	auto& audio = media[0];
+	auto audioPayloads = sdptransform::parsePayloads(audio.at("payloads"));
+
+	REQUIRE(audioPayloads == R"([ 96 ])"_json);
 
 	REQUIRE(audio.at("type") == "audio");
 	REQUIRE(audio.at("protocol") == "RTP/AVP");

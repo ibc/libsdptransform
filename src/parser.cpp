@@ -98,6 +98,30 @@ namespace sdptransform
 		return obj;
 	}
 
+	json parsePayloads(const std::string& str)
+	{
+		json arr = json::array();
+
+		std::stringstream ss(str);
+		std::string payload;
+
+		while (std::getline(ss, payload, ' '))
+		{
+			arr.push_back(toNumberIfNumber(payload));
+		}
+
+		return arr;
+	}
+
+	json parsePayloads(int number)
+	{
+		json arr = json::array();
+
+		arr.push_back(number);
+
+		return arr;
+	}
+
 	json parseImageAttributes(const std::string& str)
 	{
 		json arr = json::array();

@@ -36,6 +36,20 @@ namespace sdptransform
 		return parseParams(str);
 	}
 
+	json parsePayloads(const std::string& str);
+
+	json parsePayloads(int number);
+
+	inline json parsePayloads(const json& value)
+	{
+		if (value.is_string())
+			return parsePayloads(value.get<std::string>());
+		else if (value.is_number())
+			return parsePayloads(value.get<int>());
+		else
+			return json::array();
+	}
+
 	json parseImageAttributes(const std::string& str);
 
 	json parseSimulcastStreamList(const std::string& str);
