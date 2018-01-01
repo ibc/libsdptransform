@@ -2,8 +2,6 @@
 #include "helpers.hpp"
 #include "sdptransform.hpp"
 
-#include <iostream>
-
 SCENARIO("normalSdp", "[parse]")
 {
 	auto sdp = helpers::readFile("test/data/normal.sdp");
@@ -42,11 +40,18 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(audio.at("rtp")[1].at("rate") == 48000);
 	REQUIRE(
 		audio.at("ext")[0] ==
-		"{ \"value\": 1, \"uri\": \"URI-toffset\" }"_json
+		R"({
+			"value" : 1,
+			"uri"   : "URI-toffset"
+		})"_json
 	);
 	REQUIRE(
 		audio.at("ext")[1] ==
-		"{ \"value\": 2, \"direction\": \"recvonly\", \"uri\": \"URI-gps-string\" }"_json
+		R"({
+			"value"     : 2,
+			"direction" : "recvonly",
+			"uri"       : "URI-gps-string"
+		})"_json
 	);
 
 	auto& video = media[1];
@@ -91,11 +96,18 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(video.at("ssrcs").size() == 2);
 	REQUIRE(
 		video.at("ssrcs")[0] ==
-		"{ \"id\": 1399694169, \"attribute\": \"foo\", \"value\": \"bar\" }"_json
+		R"({
+			"id"        : 1399694169,
+			"attribute" : "foo",
+			"value"     : "bar"
+		})"_json
 	);
 	REQUIRE(
 		video.at("ssrcs")[1] ==
-		"{ \"id\": 1399694169, \"attribute\": \"baz\" }"_json
+		R"({
+			"id"        : 1399694169,
+			"attribute" : "baz"
+		})"_json
 	);
 
 	auto& cs = audio.at("candidates");
@@ -225,19 +237,35 @@ SCENARIO("hackySdp", "[parse]")
 
 	REQUIRE(
 		ssrcs[0] ==
-		"{ \"id\": 2754920552, \"attribute\": \"cname\", \"value\": \"t9YU8M1UxTF8Y1A1\" }"_json
+		R"({
+			"id"        : 2754920552,
+			"attribute" : "cname",
+			"value"     : "t9YU8M1UxTF8Y1A1"
+		})"_json
 	);
 	REQUIRE(
 		ssrcs[1] ==
-		"{ \"id\": 2754920552, \"attribute\": \"msid\", \"value\": \"Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlVa0\" }"_json
+		R"({
+			"id"        : 2754920552,
+			"attribute" : "msid",
+			"value"     : "Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlVa0"
+		})"_json
 	);
 	REQUIRE(
 		ssrcs[2] ==
-		"{ \"id\": 2754920552, \"attribute\": \"mslabel\", \"value\": \"Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV\" }"_json
+		R"({
+			"id"        : 2754920552,
+			"attribute" : "mslabel",
+			"value"     : "Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV"
+		})"_json
 	);
 	REQUIRE(
 		ssrcs[3] ==
-		"{ \"id\": 2754920552, \"attribute\": \"label\", \"value\": \"Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlVa0\" }"_json
+		R"({
+			"id"        : 2754920552,
+			"attribute" : "label",
+			"value"     : "Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlVa0"
+		})"_json
 	);
 
 	// Verify a=sctpmap:5000 webrtc-datachannel 1024.
@@ -249,4 +277,527 @@ SCENARIO("hackySdp", "[parse]")
 	// Verify a=framerate:29.97.
 	REQUIRE(media[1].at("framerate") == 1234);
 	REQUIRE(media[2].at("framerate") == double{ 29.97 });
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}
+
+SCENARIO("iceliteSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/icelite.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.at("icelite") == "ice-lite");
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}
+
+SCENARIO("invalidSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/invalid.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+
+	// Verify a=rtcp:65179 IN IP4 193.84.77.194-
+	REQUIRE(media[0].at("rtcp").at("port") == 1);
+	REQUIRE(media[0].at("rtcp").at("netType") == "IN");
+	REQUIRE(media[0].at("rtcp").at("ipVer") == 7);
+	REQUIRE(media[0].at("rtcp").at("address") == "X");
+	REQUIRE(media[0].at("invalid").size() == 1); // f= was lost.
+	REQUIRE(media[0].at("invalid")[0].at("value") == "goo:hithere");
+
+	auto newSdp = sdptransform::write(session);
+
+	// Append the wrong (so lost) f= line.
+	newSdp += "f=invalid:yes\r\n";
+
+	REQUIRE(newSdp == sdp);
+}
+
+SCENARIO("jssipSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/jssip.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& audio = media[0];
+	auto& audCands = audio.at("candidates");
+
+	REQUIRE(audCands.size() == 6);
+
+	// Testing ice optionals.
+	REQUIRE(
+		audCands[0] ==
+		R"({
+			"foundation" : 1162875081,
+			"component"  : 1,
+			"transport"  : "udp",
+			"priority"   : 2113937151,
+			"ip"         : "192.168.34.75",
+			"port"       : 60017,
+			"type"       : "host",
+			"generation" : 0
+		})"_json
+	);
+	REQUIRE(
+		audCands[2] ==
+		R"({
+			"foundation" : 3289912957,
+			"component"  : 1,
+			"transport"  : "udp",
+			"priority"   : 1845501695,
+			"ip"         : "193.84.77.194",
+			"port"       : 60017,
+			"type"       : "srflx",
+			"raddr"      : "192.168.34.75",
+			"rport"      : 60017,
+			"generation" : 0
+		})"_json
+	);
+	REQUIRE(
+		audCands[4] ==
+		R"({
+			"foundation" : 198437945,
+			"component"  : 1,
+			"transport"  : "tcp",
+			"priority"   : 1509957375,
+			"ip"         : "192.168.34.75",
+			"port"       : 0,
+			"type"       : "host",
+			"generation" : 0
+		})"_json
+	);
+}
+
+SCENARIO("jsepSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/jsep.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+
+	REQUIRE(media.size() == 2);
+
+	auto& video = media[1];
+
+	REQUIRE(video.at("ssrcGroups").size() == 1);
+	REQUIRE(
+		video.at("ssrcGroups")[0] ==
+		R"({
+			"semantics" : "FID",
+			"ssrcs"     : "1366781083 1366781084"
+		})"_json
+	);
+
+	REQUIRE(
+		video.at("msid") ==
+		"61317484-2ed4-49d7-9eb7-1414322a7aae f30bdb4a-5db8-49b5-bcdc-e0c9a23172e0"
+	);
+
+	REQUIRE(video.find("rtcpRsize") != video.end());
+	REQUIRE(video.find("endOfCandidates") != video.end());
+}
+
+SCENARIO("alacSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/alac.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& audio = media[0];
+
+	REQUIRE(audio.at("type") == "audio");
+	REQUIRE(audio.at("protocol") == "RTP/AVP");
+	REQUIRE(audio.at("fmtp")[0].at("payload") == 96);
+	REQUIRE(audio.at("fmtp")[0].at("config") == "352 0 16 40 10 14 2 255 0 0 44100");
+	REQUIRE(audio.at("rtp")[0].at("payload") == 96);
+	REQUIRE(audio.at("rtp")[0].at("codec") == "AppleLossless");
+	REQUIRE(audio.at("rtp")[0].find("rate") == audio.at("rtp")[0].end());
+	REQUIRE(audio.at("rtp")[0].find("encoding") == audio.at("rtp")[0].end());
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}
+
+SCENARIO("onvifSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/onvif.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& audio = media[0];
+
+	REQUIRE(audio.at("type") == "audio");
+	REQUIRE(audio.at("port") == 0);
+	REQUIRE(audio.at("protocol") == "RTP/AVP");
+	REQUIRE(audio.at("control") == "rtsp://example.com/onvif_camera/audio");
+	REQUIRE(audio.at("payloads") == 0);
+
+	auto& video = media[1];
+
+	REQUIRE(video.at("type") == "video");
+	REQUIRE(video.at("port") == 0);
+	REQUIRE(video.at("protocol") == "RTP/AVP");
+	REQUIRE(video.at("control") == "rtsp://example.com/onvif_camera/video");
+	REQUIRE(video.at("payloads") == 26);
+
+	auto& application = media[2];
+
+	REQUIRE(application.at("type") == "application");
+	REQUIRE(application.at("port") == 0);
+	REQUIRE(application.at("protocol") == "RTP/AVP");
+	REQUIRE(application.at("control") == "rtsp://example.com/onvif_camera/metadata");
+	REQUIRE(application.at("payloads") == 107);
+	REQUIRE(application.at("direction") == "recvonly");
+	REQUIRE(application.at("rtp")[0].at("payload") == 107);
+	REQUIRE(application.at("rtp")[0].at("codec") == "vnd.onvif.metadata");
+	REQUIRE(application.at("rtp")[0].at("rate") == 90000);
+	REQUIRE(application.at("rtp")[0].find("encoding") == application.at("rtp")[0].end());
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}
+
+SCENARIO("ssrcSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/ssrc.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& video = media[1];
+
+	REQUIRE(video.at("ssrcGroups").size() == 2);
+	REQUIRE(
+		video.at("ssrcGroups") ==
+		R"([
+			{
+				"semantics" : "FID",
+				"ssrcs"     : "3004364195 1126032854"
+			},
+			{
+				"semantics" : "FEC-FR",
+				"ssrcs"     : "3004364195 1080772241"
+			}
+		])"_json
+	);
+}
+
+SCENARIO("simulcastSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/simulcast.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& video = media[1];
+
+	REQUIRE(video.at("type") == "video");
+
+	// Test rid 1.
+	REQUIRE(
+		video.at("rids")[0] ==
+		R"({
+			"id"        : 1,
+			"direction" : "send",
+			"params"    : "pt=97;max-width=1280;max-height=720;max-fps=30"
+		})"_json
+	);
+
+	// Test rid 2.
+	REQUIRE(
+		video.at("rids")[1] ==
+		R"({
+			"id"        : 2,
+			"direction" : "send",
+			"params"    : "pt=98"
+		})"_json
+	);
+
+	// Test rid 3.
+	REQUIRE(
+		video.at("rids")[2] ==
+		R"({
+			"id"        : 3,
+			"direction" : "send",
+			"params"    : "pt=99"
+		})"_json
+	);
+
+	// Test rid 4.
+	REQUIRE(
+		video.at("rids")[3] ==
+		R"({
+			"id"        : 4,
+			"direction" : "send",
+			"params"    : "pt=100"
+		})"_json
+	);
+
+	// Test rid 5.
+	REQUIRE(
+		video.at("rids")[4] ==
+		R"({
+			"id"        : "c",
+			"direction" : "recv",
+			"params"    : "pt=97"
+		})"_json
+	);
+
+	// TODO
+
+	// // Test rid 1 params.
+	// auto rid1Params = sdptransform::parseParams(video.at("rids")[0].at("params"));
+
+	// REQUIRE(
+	// 	rid1Params ==
+	// 	R"({
+	// 		"pt"         : 97,
+	// 		"max-width"  : 1280,
+	// 		"max-height" : 720,
+	// 		"max-fps"    : 30
+	// 	})"_json
+	// );
+
+	// // Test rid 2 params.
+	// auto rid2Params = sdptransform::parseParams(video.at("rids")[1].at("params"));
+
+	// REQUIRE(
+	// 	rid2Params ==
+	// 	R"({
+	// 		"pt" : 98
+	// 	})"_json
+	// );
+
+	// // Test rid 3 params.
+	// auto rid3Params = sdptransform::parseParams(video.at("rids")[2].at("params"));
+
+	// REQUIRE(
+	// 	rid3Params ==
+	// 	R"({
+	// 		"pt" : 99
+	// 	})"_json
+	// );
+
+	// // Test rid 4 params.
+	// auto rid4Params = sdptransform::parseParams(video.at("rids")[3].at("params"));
+
+	// REQUIRE(
+	// 	rid4Params ==
+	// 	R"({
+	// 		"pt" : 100
+	// 	})"_json
+	// );
+
+	// // Test rid 5 params.
+	// auto rid5Params = sdptransform::parseParams(video.at("rids")[4].at("params"));
+
+	// REQUIRE(
+	// 	rid5Params ==
+	// 	R"({
+	// 		"pt" : 97
+	// 	})"_json
+	// );
+
+	// Test imageattr lines.
+	REQUIRE(video.at("imageattrs").size() == 5);
+
+	// Test imageattr 1.
+	REQUIRE(
+		video.at("imageattrs")[0] ==
+		R"({
+			"pt"     : 97,
+			"dir1"   : "send",
+			"attrs1" : "[x=1280,y=720]",
+			"dir2"   : "recv",
+			"attrs2" : "[x=1280,y=720] [x=320,y=180] [x=160,y=90]"
+		})"_json
+	);
+
+	// Test imageattr 2.
+	REQUIRE(
+		video.at("imageattrs")[1] ==
+		R"({
+			"pt"     : 98,
+			"dir1"   : "send",
+			"attrs1" : "[x=320,y=180]"
+		})"_json
+	);
+
+	// Test imageattr 3.
+	REQUIRE(
+		video.at("imageattrs")[2] ==
+		R"({
+			"pt"     : 99,
+			"dir1"   : "send",
+			"attrs1" : "[x=160,y=90]"
+		})"_json
+	);
+
+	// Test imageattr 4.
+	REQUIRE(
+		video.at("imageattrs")[3] ==
+		R"({
+			"pt"     : 100,
+			"dir1"   : "recv",
+			"attrs1" : "[x=1280,y=720] [x=320,y=180]",
+			"dir2"   : "send",
+			"attrs2" : "[x=1280,y=720]"
+		})"_json
+	);
+
+	// Test imageattr 5.
+	REQUIRE(
+		video.at("imageattrs")[4] ==
+		R"({
+			"pt"     : "*",
+			"dir1"   : "recv",
+			"attrs1" : "*"
+		})"_json
+	);
+
+	// TODO
+
+	// // Test imageattr 2 send params.
+	// auto imageattr2SendParams =
+	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[1].at("attrs1"));
+
+	// REQUIRE(
+	// 	imageattr2SendParams ==
+	// 	R"([
+	// 		{
+	// 			"x" : 320,
+	// 			"y" : 180
+	// 		}
+	// 	])"_json
+	// );
+
+	// // Test imageattr 3 send params.
+	// auto imageattr3SendParams =
+	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[2].at("attrs1"));
+
+	// REQUIRE(
+	// 	imageattr3SendParams ==
+	// 	R"([
+	// 		{
+	// 			"x" : 160,
+	// 			"y" : 90
+	// 		}
+	// 	])"_json
+	// );
+
+	// // Test imageattr 4 recv params.
+	// auto imageattr4RecvParams =
+	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[3].at("attrs1"));
+
+	// REQUIRE(
+	// 	imageattr4RecvParams ==
+	// 	R"([
+	// 		{
+	// 			"x" : 1280,
+	// 			"y" : 720
+	// 		},
+	// 		{
+	// 			"x" : 320,
+	// 			"y" : 180
+	// 		}
+	// 	])"_json
+	// );
+
+	// // Test imageattr 4 send params.
+	// auto imageattr4SendParams =
+	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[3].at("attrs2"));
+
+	// REQUIRE(
+	// 	imageattr4SendParams ==
+	// 	R"([
+	// 		{
+	// 			"x" : 1280,
+	// 			"y" : 720
+	// 		}
+	// 	])"_json
+	// );
+
+	// // Test imageattr 5 recv params.
+	// auto imageattr5RecvParams =
+	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[4].at("attrs1"));
+
+	// REQUIRE(imageattr5RecvParams == "*");
+
+	// Test simulcast line.
+	REQUIRE(
+		video.at("simulcast") ==
+		R"({
+			"dir1"  : "send",
+			"list1" : "1,~4;2;3",
+			"dir2"  : "recv",
+			"list2" : "c"
+		})"_json
+	);
+
+	// TODO
+
+	// // Test simulcast send streams.
+	// auto simulcastSendStreams =
+	// 	sdptransform::parseSimulcastStreamList(video.at("simulcast").at("list1"));
+
+	// REQUIRE(
+	// 	simulcastSendStreams ==
+	// 	R"([
+	// 		[ { "scid": 1, "paused": false }, { "scid": 4, "paused": true } ],
+	// 		[ { "scid": 2, "paused": false } ],
+	// 		[ { "scid": 3, "paused": false } ]
+	// 	])"_json
+	// );
+
+	// // Test simulcast recv streams.
+	// auto simulcastRecvStreams =
+	// 	sdptransform::parseSimulcastStreamList(video.at("simulcast").at("list2"));
+
+	// REQUIRE(
+	// 	simulcastRecvStreams ==
+	// 	R"([
+	// 		[ { "scid": "c", "paused": false } ]
+	// 	])"_json
+	// );
+
+	// TODO
+
+	// Test simulcast version 03 line.
+	REQUIRE(
+		video.at("simulcast_03") ==
+		R"({
+			"value" : "send rid=1,4;2;3 paused=4 recv rid=c"
+		})"_json
+	);
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
 }

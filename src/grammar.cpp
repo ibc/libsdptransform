@@ -592,6 +592,20 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
+						std::regex("^(end-of-candidates)"),
+						// names:
+						{ },
+						// format:
+						"%s"
+					},
+
+					// a=remote-candidates:1 203.0.113.1 54400 2 203.0.113.1 54401
+					{
+						// name:
+						"remoteCandidates",
+						// push:
+						"",
+						// reg:
 						std::regex("^remote-candidates:(.*)"),
 						// names:
 						{ },
