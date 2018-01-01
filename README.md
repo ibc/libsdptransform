@@ -1,6 +1,6 @@
 # libsdptransform
 
-C++ version of the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library exposesing the same API.
+C++ version of the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library exposing the same API.
 
 **libsdptransform** is a simple parser and writer of SDP. Defines internal grammar based on [RFC4566 - SDP](http://tools.ietf.org/html/rfc4566), [RFC5245 - ICE](http://tools.ietf.org/html/rfc5245), and many more.
 
@@ -13,7 +13,7 @@ For simplicity it will force values that are integers to integers and leave ever
 #include "sdptransform.hpp"
 ```
 
-The **libsdptransform** API is exposed on the `sdptransform` C++ namespace.
+The **libsdptransform** API is exposed in the `sdptransform` C++ namespace.
 
 **libsdptransform** integrates the [JSON for Modern C++](https://github.com/nlohmann/json/) library and exposes it under the `json` C++ namespace. All the API functions expect and/or return a JSON object.
 
@@ -33,7 +33,7 @@ session.at("name");
 // [json.exception.out_of_range.403] key 'name' not found
 ```
 
-* Now, assuming the SDP has `s=1234`, the following would also crash (since we are assuming that the value is a string):
+* Now, assuming the SDP has `s=1234`, the following code would also crash (since we are assuming that the value is a string):
 
 ```c++
 std::string sdpName = session.at("name");
@@ -56,7 +56,7 @@ if (session.find("name") != session.end())
 }
 ```
 
-* Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object wih value `nullptr` (if it did not exist before).
+* Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object with value `nullptr` (if it did not exist before).
 
 So, it's **strongly** recommended to read the corresponding [JSON documentation](https://github.com/nlohmann/json/).
 
@@ -258,7 +258,7 @@ Syntax:
 * `json parsePayloads(int number);`
 * `json parsePayloads(const json& value)`
 
-Returns an array with all the payload advertised in the main m-line.
+Returns an array with all the payload advertised in the corresponding m-line.
 
 ```c++
 json payloads =
@@ -384,7 +384,7 @@ The only thing different from the original input is we follow the order specifie
 
 Iñaki Baz Castillo [[website](https://inakibaz.me)|[github](https://github.com/ibc/)]
 
-Special thanks to [Eirik Albrigtsen](https://github.com/clux), the author of sdp-transform](https://github.com/clux/sdp-transform/).
+Special thanks to [Eirik Albrigtsen](https://github.com/clux), the author of the [sdp-transform](https://github.com/clux/sdp-transform/).
 
 
 ## License
