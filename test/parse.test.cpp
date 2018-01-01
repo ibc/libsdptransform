@@ -678,73 +678,71 @@ SCENARIO("simulcastSdp", "[parse]")
 		})"_json
 	);
 
-	// TODO
+	// Test imageattr 2 send params.
+	auto imageattr2SendParams =
+		sdptransform::parseImageAttributes(video.at("imageattrs")[1].at("attrs1"));
 
-	// // Test imageattr 2 send params.
-	// auto imageattr2SendParams =
-	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[1].at("attrs1"));
+	REQUIRE(
+		imageattr2SendParams ==
+		R"([
+			{
+				"x" : 320,
+				"y" : 180
+			}
+		])"_json
+	);
 
-	// REQUIRE(
-	// 	imageattr2SendParams ==
-	// 	R"([
-	// 		{
-	// 			"x" : 320,
-	// 			"y" : 180
-	// 		}
-	// 	])"_json
-	// );
+	// Test imageattr 3 send params.
+	auto imageattr3SendParams =
+		sdptransform::parseImageAttributes(video.at("imageattrs")[2].at("attrs1"));
 
-	// // Test imageattr 3 send params.
-	// auto imageattr3SendParams =
-	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[2].at("attrs1"));
+	REQUIRE(
+		imageattr3SendParams ==
+		R"([
+			{
+				"x" : 160,
+				"y" : 90
+			}
+		])"_json
+	);
 
-	// REQUIRE(
-	// 	imageattr3SendParams ==
-	// 	R"([
-	// 		{
-	// 			"x" : 160,
-	// 			"y" : 90
-	// 		}
-	// 	])"_json
-	// );
+	// Test imageattr 4 recv params.
+	auto imageattr4RecvParams =
+		sdptransform::parseImageAttributes(video.at("imageattrs")[3].at("attrs1"));
 
-	// // Test imageattr 4 recv params.
-	// auto imageattr4RecvParams =
-	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[3].at("attrs1"));
+	REQUIRE(
+		imageattr4RecvParams ==
+		R"([
+			{
+				"x" : 1280,
+				"y" : 720
+			},
+			{
+				"x" : 320,
+				"y" : 180
+			}
+		])"_json
+	);
 
-	// REQUIRE(
-	// 	imageattr4RecvParams ==
-	// 	R"([
-	// 		{
-	// 			"x" : 1280,
-	// 			"y" : 720
-	// 		},
-	// 		{
-	// 			"x" : 320,
-	// 			"y" : 180
-	// 		}
-	// 	])"_json
-	// );
+	// Test imageattr 4 send params.
+	auto imageattr4SendParams =
+		sdptransform::parseImageAttributes(video.at("imageattrs")[3].at("attrs2"));
 
-	// // Test imageattr 4 send params.
-	// auto imageattr4SendParams =
-	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[3].at("attrs2"));
+	REQUIRE(
+		imageattr4SendParams ==
+		R"([
+			{
+				"x" : 1280,
+				"y" : 720
+			}
+		])"_json
+	);
 
-	// REQUIRE(
-	// 	imageattr4SendParams ==
-	// 	R"([
-	// 		{
-	// 			"x" : 1280,
-	// 			"y" : 720
-	// 		}
-	// 	])"_json
-	// );
+	// Test imageattr 5 recv params.
+	auto imageattr5RecvParams =
+		sdptransform::parseImageAttributes(video.at("imageattrs")[4].at("attrs1"));
 
-	// // Test imageattr 5 recv params.
-	// auto imageattr5RecvParams =
-	// 	sdptransform::parseImageAttributes(video.at("imageattrs")[4].at("attrs1"));
-
-	// REQUIRE(imageattr5RecvParams == "*");
+	REQUIRE(imageattr5RecvParams == "*");
 
 	// Test simulcast line.
 	REQUIRE(

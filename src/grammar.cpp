@@ -797,8 +797,10 @@ namespace sdptransform
 							// a=imageattr:97
 							"^imageattr:(\\d+|\\*)" +
 							// send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320]
+							// send *
 							"[\\s\\t]+(send|recv)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*)" +
 							// recv [x=330,y=250]
+							// recv *
 							"(?:[\\s\\t]+(recv|send)[\\s\\t]+(\\*|\\[\\S+\\](?:[\\s\\t]+\\[\\S+\\])*))?"
 						),
 						// names:

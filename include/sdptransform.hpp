@@ -36,6 +36,8 @@ namespace sdptransform
 		return parseParams(str);
 	}
 
+	json parseImageAttributes(const std::string& str);
+
 	std::string write(json& session);
 }
 

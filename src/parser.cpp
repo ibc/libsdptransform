@@ -81,7 +81,7 @@ namespace sdptransform
 
 	json parseParams(const std::string& str)
 	{
-		json params = json::object();
+		json obj = json::object();
 		std::stringstream ss(str);
 		std::string param;
 
@@ -92,10 +92,47 @@ namespace sdptransform
 			if (param.length() == 0)
 				continue;
 
-			insertParam(params, param);
+			insertParam(obj, param);
 		}
 
-		return params;
+		return obj;
+	}
+
+	json parseImageAttributes(const std::string& str)
+	{
+		json arr = json::array();
+		std::stringstream ss(str);
+		std::string item;
+
+		while (std::getline(ss, item, ' '))
+		{
+			trim(item);
+
+			// Special case for * value.
+			if (item == "*")
+				return item;
+
+			if (item.length() < 5) // [x=0]
+				continue;
+
+			json obj = json::object();
+			std::stringstream ss2(item.substr(1, item.length() - 2));
+			std::string param;
+
+			while (std::getline(ss2, param, ','))
+			{
+				trim(param);
+
+				if (param.length() == 0)
+					continue;
+
+				insertParam(obj, param);
+			}
+
+			arr.push_back(obj);
+		}
+
+		return arr;
 	}
 
 	void parseReg(const grammar::Rule& rule, json& location, const std::string& content)
