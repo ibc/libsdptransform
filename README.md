@@ -60,6 +60,8 @@ Syntax: `json parse(const std::string& sdp)`
 
 Parses an unprocessed SDP string and returns a JSON object. SDP lines can be terminated on `\r\n` (as per specification) or just `\n`.
 
+The syntax of the generated SDP object and each SDP line is documented [here](doc/Grammar.md).
+
 ```c++
 std::string sdpStr = R"(v=0
 o=- 20518 0 IN IP4 203.0.113.1
