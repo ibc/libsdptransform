@@ -143,6 +143,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 #### fmtp
 
 `a=fmtp:108 profile-level-id=24;bitrate=64000`
+
 `a=fmtp:111 minptime=10; useinbandfec=1`
 
 * multiple
@@ -206,6 +207,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 #### ext
 
 `a=extmap:1/recvonly URI-gps-string`
+
 `a=extmap:2 urn:ietf:params:rtp-hdrext:toffset`
 
 * multiple
@@ -321,9 +323,13 @@ Some lines are parsed as a JSON object with different fields, while others have 
 #### candidates
 
 `a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host`
+
 `a=candidate:1162875081 1 udp 2113937151 192.168.34.75 60017 typ host generation 0 network-id 3 network-cost 10`
+
 `a=candidate:3289912957 2 udp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 generation 0 network-id 3 network-cost 10`
+
 `a=candidate:229815620 1 tcp 1518280447 192.168.150.19 60017 typ host tcptype active generation 0 network-id 3 network-cost 10`
+
 `a=candidate:3289912957 2 tcp 1845501695 193.84.77.194 60017 typ srflx raddr 192.168.34.75 rport 60017 tcptype passive generation 0 network-id 3 network-cost 10`
 
 * multiple
@@ -474,9 +480,11 @@ Some lines are parsed as a JSON object with different fields, while others have 
 
 #### imageattrs
 
-`a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]
-`a=imageattr:* send [x=800,y=640] recv *
-`a=imageattr:100 recv [x=320,y=240]
+`a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]`
+
+`a=imageattr:* send [x=800,y=640] recv *`
+
+`a=imageattr:100 recv [x=320,y=240]`
 
 * multiple
 * type: object
@@ -492,8 +500,9 @@ Some lines are parsed as a JSON object with different fields, while others have 
 
 #### simulcast
 
-`a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8
-`a=simulcast:recv 1;4,5 send 6;7
+`a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8`
+
+`a=simulcast:recv 1;4,5 send 6;7`
 
 * type: object
 
@@ -509,8 +518,9 @@ Some lines are parsed as a JSON object with different fields, while others have 
 
 Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03) (implemented by some browsers).
 
-`a=simulcast: recv pt=97;98 send pt=97
-`a=simulcast: send rid=5;6;7 paused=6,7
+`a=simulcast: recv pt=97;98 send pt=97`
+
+`a=simulcast: send rid=5;6;7 paused=6,7`
 
 * type: string
 * example: "recv pt=97;98 send pt=97"
@@ -518,8 +528,9 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 
 #### framerate
 
-`a=framerate:25
-`a=framerate:29.97
+`a=framerate:25`
+
+`a=framerate:29.97`
 
 * type: float
 * example: "25.0"
