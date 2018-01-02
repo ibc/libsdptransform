@@ -261,6 +261,8 @@ Syntax: `json parseParams(const std::string& str)`
 
 Parses `fmtp.at("config")` and others such as `rid.at("params")` and returns an object with all the params in a key/value fashion.
 
+NOTE: All the values are expressed as strings.
+
 ```c++
 json params =
   sdptransform::parseParams(session.at("media")[1].at("fmtp")[0].at("config"));
@@ -287,7 +289,7 @@ json payloads =
   sdptransform::parsePayloads(session.at("media")[1].at("payloads"));
 ```
 
-Resulting `payloads` is a C++ vector of `int` as follows:
+Resulting `payloads` is a C++ vector of `int` elements as follows:
 
 ```json
 [ 97, 98 ]
@@ -326,8 +328,8 @@ Parses [simulcast](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast) 
 
 Returns an array of simulcast streams. Each entry is an array of alternative simulcast formats, which are objects with two keys:
 
-* `scid`: Simulcast identifier
-* `paused`: Whether the simulcast format is paused
+* `scid`: Simulcast identifier (string)
+* `paused`: Whether the simulcast format is paused (boolean)
 
 ```c++
 // // a=simulcast:send 1,~4;2;3 recv c
