@@ -402,7 +402,19 @@ The only thing different from the original input is we follow the order specifie
 
 ## Installation
 
-*TBD*
+```bash
+git clone https://github.com/ibc/libsdptransform.git
+cd libsdptransform/
+make install -C build/ # or: cd build/ && make install
+```
+
+Depending on the host, it will generate the following static lib and header files:
+
+```
+-- Installing: /usr/local/lib/libsdptransform.a
+-- Up-to-date: /usr/local/include/sdptransform/sdptransform.hpp
+-- Up-to-date: /usr/local/include/sdptransform/json.hpp
+```
 
 
 ## Author

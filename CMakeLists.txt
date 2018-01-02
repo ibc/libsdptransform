@@ -5,6 +5,8 @@ project(sdptransform)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+subdirs(test readme-helper)
+
 include_directories(${sdptransform_SOURCE_DIR}/include)
 
 set(
@@ -12,10 +14,15 @@ set(
 	src/grammar.cpp
 	src/parser.cpp
 	src/writer.cpp
+)
+
+set(
+	HEADER_FILES
 	include/sdptransform.hpp
 	include/json.hpp
 )
 
-add_library(sdptransform STATIC ${SOURCE_FILES})
+add_library(sdptransform STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
-subdirs(test readme-helper)
+install(TARGETS sdptransform DESTINATION lib)
+install(FILES ${HEADER_FILES} DESTINATION include/sdptransform)
