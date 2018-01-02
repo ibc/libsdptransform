@@ -251,9 +251,9 @@ namespace sdptransform
 						// names:
 						{ "type", "limit" },
 						// types:
-						{ 's', 's' },
+						{ 's', 'd' },
 						// format:
-						"%s:%s"
+						"%s:%d"
 					}
 				}
 			},
