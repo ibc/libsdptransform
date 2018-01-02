@@ -45,7 +45,7 @@ namespace sdptransform
 						// types:
 						{ 's', 'd', 'd', 's', 'd', 's' },
 						// format:
-						"%s %s %d %s IP%d %s"
+						"%s %d %d %s IP%d %s"
 					}
 				}
 			},
