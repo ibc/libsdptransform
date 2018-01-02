@@ -24,7 +24,7 @@ namespace sdptransform
 						// types:
 						{ 'd' },
 						// format:
-						"%s"
+						"%d"
 					}
 				}
 			},
