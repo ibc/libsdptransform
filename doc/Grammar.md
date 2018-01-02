@@ -9,7 +9,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * `type` field indicates the C++ valid conversion for the parsed value or values.
 
 
-#### version
+### version
 
 `v=0`
 
@@ -17,7 +17,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: 0
 
 
-#### origin
+### origin
 
 `o=- 20518 0 IN IP4 203.0.113.1`
 
@@ -33,7 +33,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | adddress        | string  | yes       | "203.0.113.1"
 
 
-#### name
+### name
 
 `s=-`
 
@@ -41,7 +41,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "-"
 
 
-#### description
+### description
 
 `i=foo`
 
@@ -49,7 +49,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "foo"
 
 
-#### uri
+### uri
 
 `u=https://foo.com`
 
@@ -57,7 +57,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "https://foo.com"
 
 
-#### email
+### email
 
 `e=alice@foo.com`
 
@@ -65,7 +65,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "alice@foo.com"
 
 
-#### phone
+### phone
 
 `p=+12345678`
 
@@ -73,7 +73,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "+12345678"
 
 
-#### timing
+### timing
 
 `t=0 0`
 
@@ -85,7 +85,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | stop            | integer | yes       | 0
 
 
-#### connection
+### connection
 
 `c=IN IP4 10.47.197.26`
 
@@ -97,7 +97,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | ip              | string  | yes       | "10.47.197.26"
 
 
-#### bandwidth
+### bandwidth
 
 `b=AS:4000`
 
@@ -110,7 +110,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | limit           | integer | yes       | 4000
 
 
-#### media
+### media
 
 `m=video 51744 RTP/AVP 126 97 98 34 31`
 
@@ -125,7 +125,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | payloads        | string  | no        | "126 97 98 34 31"
 
 
-#### rtp
+### rtp
 
 `a=rtpmap:110 opus/48000/2`
 
@@ -140,7 +140,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | encoding        | string  | no       | "2"
 
 
-#### fmtp
+### fmtp
 
 `a=fmtp:108 profile-level-id=24;bitrate=64000`
 
@@ -155,7 +155,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | config          | string  | yes       | "profile-level-id=24;bitrate=64000"
 
 
-#### control
+### control
 
 `a=control:streamid=0`
 
@@ -163,7 +163,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "streamid=0"
 
 
-#### rtcp
+### rtcp
 
 `a=rtcp:65179 IN IP4 193.84.77.194`
 
@@ -177,7 +177,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | adddress        | string  | yes       | "193.84.77.194"
 
 
-#### rtcpFbTrrInt
+### rtcpFbTrrInt
 
 `a=rtcp-fb:98 trr-int 100`
 
@@ -190,7 +190,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | value           | integer | yes       | 100
 
 
-#### rtcpFb
+### rtcpFb
 
 `a=rtcp-fb:98 nack rpsi`
 
@@ -204,7 +204,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | subtype         | string  | no        | "rpsi"
 
 
-#### ext
+### ext
 
 `a=extmap:1/recvonly URI-gps-string`
 
@@ -221,7 +221,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | config          | string  | no        |
 
 
-#### crypto
+### crypto
 
 `a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32`
 
@@ -236,7 +236,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | sessionConfig    | string  | no       |
 
 
-#### setup
+### setup
 
 `a=setup:actpass`
 
@@ -244,7 +244,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "actpass"
 
 
-#### mid
+### mid
 
 `a=mid:audio`
 
@@ -252,7 +252,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "audio"
 
 
-#### msid
+### msid
 
 `a=msid:0c8b064d-d807-43b4 46e0-8e16-7ef0db0db64a`
 
@@ -260,7 +260,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "0c8b064d-d807-43b4 46e0-8e16-7ef0db0db64a"
 
 
-#### ptime
+### ptime
 
 `a=ptime:20`
 
@@ -268,7 +268,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: 20
 
 
-#### maxptime
+### maxptime
 
 `a=maxptime:60`
 
@@ -276,7 +276,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: 60
 
 
-#### direction
+### direction
 
 `a=sendrecv`
 
@@ -284,7 +284,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "sendrecv"
 
 
-#### icelite
+### icelite
 
 `a=ice-lite`
 
@@ -292,7 +292,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "ice-lite"
 
 
-#### iceUfrag
+### iceUfrag
 
 `a=ice-ufrag:F7gI`
 
@@ -300,7 +300,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "F7gI"
 
 
-#### icePwd
+### icePwd
 
 `a=ice-pwd:x9cml/YzichV2+XlhiMu8g`
 
@@ -308,7 +308,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "x9cml/YzichV2+XlhiMu8g"
 
 
-#### fingerprint
+### fingerprint
 
 `a=fingerprint:SHA-1 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33`
 
@@ -320,7 +320,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | hash            | string  | yes       | "00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33"
 
 
-#### candidates
+### candidates
 
 `a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host`
 
@@ -351,7 +351,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | network-cost    | integer | no        | 10
 
 
-#### endOfCandidates
+### endOfCandidates
 
 `a=end-of-candidates`
 
@@ -359,7 +359,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "end-of-candidates"
 
 
-#### remoteCandidates
+### remoteCandidates
 
 `a=remote-candidates:1 203.0.113.1 54400 2 203.0.113.1 54401`
 
@@ -367,7 +367,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "1 203.0.113.1 54400 2 203.0.113.1 54401"
 
 
-#### iceOptions
+### iceOptions
 
 `a=ice-options:google-ice`
 
@@ -375,7 +375,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "google-ice"
 
 
-#### ssrcs
+### ssrcs
 
 `a=ssrc:2566107569 cname:t9YU8M1UxTF8Y1A1`
 
@@ -389,7 +389,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | value           | string  | no        | "t9YU8M1UxTF8Y1A1"
 
 
-#### ssrcGroups
+### ssrcGroups
 
 `a=ssrc-group:FEC-FR 3004364195 1080772241`
 
@@ -402,7 +402,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | ssrcs           | string  | no        | "3004364195 1080772241"
 
 
-#### msidSemantic
+### msidSemantic
 
 `a=msid-semantic: WMS Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV`
 
@@ -414,7 +414,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | token           | string  | no        | "Jvlam5X3SX1OP6pn20zWogvaKJz5Hjf9OnlV"
 
 
-#### groups
+### groups
 
 `a=group:BUNDLE audio video`
 
@@ -427,7 +427,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | mids            | string  | no        | "audio video"
 
 
-#### rtcpMux
+### rtcpMux
 
 `a=rtcp-mux`
 
@@ -435,7 +435,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "rtcp-mux"
 
 
-#### rtcpRsize
+### rtcpRsize
 
 `a=rtcp-rsize`
 
@@ -443,7 +443,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "rtcp-rsize"
 
 
-#### sctpmap
+### sctpmap
 
 `a=sctpmap:5000 webrtc-datachannel 1024`
 
@@ -456,7 +456,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | maxMessageSize  | integer | no        | 1024
 
 
-#### xGoogleFlag
+### xGoogleFlag
 
 `a=x-google-flag:conference`
 
@@ -464,7 +464,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 * example: "conference"
 
 
-#### rids
+### rids
 
 `a=rid:1 send max-width=1280;max-height=720`
 
@@ -478,7 +478,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | params          | string  | no        | "max-width=1280;max-height=720"
 
 
-#### imageattrs
+### imageattrs
 
 `a=imageattr:97 send [x=800,y=640,sar=1.1,q=0.6] [x=480,y=320] recv [x=330,y=250]`
 
@@ -498,7 +498,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | attrs2          | string  | no        | "[x=330,y=250]"
 
 
-#### simulcast
+### simulcast
 
 `a=simulcast:send 1,2,3;~4,~5 recv 6;~7,~8`
 
@@ -514,7 +514,7 @@ Some lines are parsed as a JSON object with different fields, while others have 
 | list2           | string  | no        | "6;~7,~8"
 
 
-#### simulcast_03
+### simulcast_03
 
 Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03) (implemented by some browsers).
 
@@ -526,7 +526,7 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 * example: "recv pt=97;98 send pt=97"
 
 
-#### framerate
+### framerate
 
 `a=framerate:25`
 
@@ -536,7 +536,7 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 * example: "25.0"
 
 
-#### invalid
+### invalid
 
 Unknown SDP lines are stored within the `invalid` key.
 
