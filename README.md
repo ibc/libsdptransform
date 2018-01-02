@@ -7,8 +7,10 @@ C++ version of the [sdp-transform](https://github.com/clux/sdp-transform/) JavaS
 
 ## Usage
 
+Once installed (see *Installation* below):
+
 ```c++
-#include "sdptransform.hpp"
+#include "sdptransform/sdptransform.hpp"
 ```
 
 The **libsdptransform** API is exposed in the `sdptransform` C++ namespace.
