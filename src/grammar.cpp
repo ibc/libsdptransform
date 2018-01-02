@@ -21,6 +21,8 @@ namespace sdptransform
 						std::regex("^(\\d*)$"),
 						// names:
 						{ },
+						// types:
+						{ 'd' },
 						// format:
 						"%s"
 					}
@@ -40,6 +42,8 @@ namespace sdptransform
 						std::regex("^(\\S*) (\\d*) (\\d*) (\\S*) IP(\\d) (\\S*)"),
 						// names:
 						{ "username", "sessionId", "sessionVersion", "netType", "ipVer", "address" },
+						// types:
+						{ 's', 'd', 'd', 's', 'd', 's' },
 						// format:
 						"%s %s %d %s IP%d %s"
 					}
@@ -59,6 +63,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -78,6 +84,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -97,6 +105,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -116,6 +126,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -135,6 +147,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -153,6 +167,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -171,6 +187,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					}
@@ -190,6 +208,8 @@ namespace sdptransform
 						std::regex("^(\\d*) (\\d*)"),
 						// names:
 						{ "start", "stop" },
+						// types:
+						{ 'd', 'd' },
 						// format:
 						"%d %d"
 					}
@@ -209,6 +229,8 @@ namespace sdptransform
 						std::regex("^IN IP(\\d) (\\S*)"),
 						// names:
 						{ "version", "ip" },
+						// types:
+						{ 'd', 's' },
 						// format:
 						"IN IP%d %s"
 					}
@@ -228,6 +250,8 @@ namespace sdptransform
 						std::regex("^(TIAS|AS|CT|RR|RS):(\\d*)"),
 						// names:
 						{ "type", "limit" },
+						// types:
+						{ 's', 's' },
 						// format:
 						"%s:%s"
 					}
@@ -247,6 +271,8 @@ namespace sdptransform
 						std::regex("^(\\w*) (\\d*) ([\\w\\/]*)(?: (.*))?"),
 						// names:
 						{ "type", "port", "protocol", "payloads" },
+						// types:
+						{ 's', 'd', 's', 's' },
 						// format:
 						"%s %d %s %s"
 					}
@@ -266,6 +292,8 @@ namespace sdptransform
 						std::regex("^rtpmap:(\\d*) ([\\w\\-\\.]*)(?:\\s*\\/(\\d*)(?:\\s*\\/(\\S*))?)?"),
 						// names:
 						{ "payload", "codec", "rate", "encoding" },
+						// types:
+						{ 'd', 's', 'd', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -290,6 +318,8 @@ namespace sdptransform
 						std::regex("^fmtp:(\\d*) ([\\S| ]*)"),
 						// names:
 						{ "payload", "config" },
+						// types:
+						{ 'd', 's' },
 						// format:
 						"fmtp:%d %s"
 					},
@@ -304,6 +334,8 @@ namespace sdptransform
 						std::regex("^control:(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"control:%s"
 					},
@@ -318,6 +350,8 @@ namespace sdptransform
 						std::regex("^rtcp:(\\d*)(?: (\\S*) IP(\\d) (\\S*))?"),
 						// names:
 						{ "port", "netType", "ipVer", "address" },
+						// types:
+						{ 'd', 's', 'd', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -339,8 +373,10 @@ namespace sdptransform
 						std::regex("^rtcp-fb:(\\*|\\d*) trr-int (\\d*)"),
 						// names:
 						{ "payload", "value" },
+						// types:
+						{ 's', 'd' },
 						// format:
-						"rtcp-fb:%d trr-int %d"
+						"rtcp-fb:%s trr-int %d"
 					},
 
 					// a=rtcp-fb:98 nack rpsi
@@ -353,6 +389,8 @@ namespace sdptransform
 						std::regex("^rtcp-fb:(\\*|\\d*) ([\\w\\-_]*)(?: ([\\w\\-_]*))?"),
 						// names:
 						{ "payload", "type", "subtype" },
+						// types:
+						{ 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -375,6 +413,8 @@ namespace sdptransform
 						std::regex("^extmap:(\\d+)(?:\\/(\\w+))? (\\S*)(?: (\\S*))?"),
 						// names:
 						{ "value", "direction", "uri", "config" },
+						// types:
+						{ 'd', 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -397,6 +437,8 @@ namespace sdptransform
 						std::regex("^crypto:(\\d*) ([\\w_]*) (\\S*)(?: (\\S*))?"),
 						// names:
 						{ "id", "suite", "config", "sessionConfig" },
+						// types:
+						{ 'd', 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -418,6 +460,8 @@ namespace sdptransform
 						std::regex("^setup:(\\w*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"setup:%s"
 					},
@@ -432,6 +476,8 @@ namespace sdptransform
 						std::regex("^mid:([^\\s]*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"mid:%s"
 					},
@@ -446,6 +492,8 @@ namespace sdptransform
 						std::regex("^msid:(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"msid:%s"
 					},
@@ -460,6 +508,8 @@ namespace sdptransform
 						std::regex("^ptime:(\\d*)"),
 						// names:
 						{ },
+						// types:
+						{ 'd' },
 						// format:
 						"ptime:%d"
 					},
@@ -474,6 +524,8 @@ namespace sdptransform
 						std::regex("^maxptime:(\\d*)"),
 						// names:
 						{ },
+						// types:
+						{ 'd' },
 						// format:
 						"maxptime:%d"
 					},
@@ -488,6 +540,8 @@ namespace sdptransform
 						std::regex("^(sendrecv|recvonly|sendonly|inactive)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					},
@@ -502,6 +556,8 @@ namespace sdptransform
 						std::regex("^(ice-lite)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					},
@@ -516,6 +572,8 @@ namespace sdptransform
 						std::regex("^ice-ufrag:(\\S*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"ice-ufrag:%s"
 					},
@@ -530,6 +588,8 @@ namespace sdptransform
 						std::regex("^ice-pwd:(\\S*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"ice-pwd:%s"
 					},
@@ -544,6 +604,8 @@ namespace sdptransform
 						std::regex("^fingerprint:(\\S*) (\\S*)"),
 						// names:
 						{ "type", "hash" },
+						// types:
+						{ 's', 's' },
 						// format:
 						"fingerprint:%s %s"
 					},
@@ -562,6 +624,8 @@ namespace sdptransform
 						std::regex("^candidate:(\\S*) (\\d*) (\\S*) (\\d*) (\\S*) (\\d*) typ (\\S*)(?: raddr (\\S*) rport (\\d*))?(?: tcptype (\\S*))?(?: generation (\\d*))?(?: network-id (\\d*))?(?: network-cost (\\d*))?"),
 						// names:
 						{ "foundation", "component", "transport", "priority", "ip", "port", "type", "raddr", "rport", "tcptype", "generation", "network-id", "network-cost" },
+						// types:
+						{ 's', 'd', 's', 'd', 's', 'd', 's', 's', 'd', 's', 'd', 'd', 'd', 'd' },
 						// format:
 						"",
 						// formatFunc:
@@ -595,6 +659,8 @@ namespace sdptransform
 						std::regex("^(end-of-candidates)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					},
@@ -609,6 +675,8 @@ namespace sdptransform
 						std::regex("^remote-candidates:(.*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"remote-candidates:%s"
 					},
@@ -623,6 +691,8 @@ namespace sdptransform
 						std::regex("^ice-options:(\\S*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"ice-options:%s"
 					},
@@ -637,6 +707,8 @@ namespace sdptransform
 						std::regex("^ssrc:(\\d*) ([\\w_]*)(?::(.*))?"),
 						// names:
 						{ "id", "attribute", "value" },
+						// types:
+						{ 'd', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -667,6 +739,8 @@ namespace sdptransform
 						std::regex("^ssrc-group:([\x21\x23\x24\x25\x26\x27\x2A\x2B\x2D\x2E\\w]*) (.*)"),
 						// names:
 						{ "semantics", "ssrcs" },
+						// types:
+						{ 's', 's' },
 						// format:
 						"ssrc-group:%s %s"
 					},
@@ -681,6 +755,8 @@ namespace sdptransform
 						std::regex("^msid-semantic:\\s?(\\w*) (\\S*)"),
 						// names:
 						{ "semantic", "token" },
+						// types:
+						{ 's', 's' },
 						// format:
 						"msid-semantic: %s %s" // Space after ':' is not accidental.
 					},
@@ -695,6 +771,8 @@ namespace sdptransform
 						std::regex("^group:(\\w*) (.*)"),
 						// names:
 						{ "type", "mids" },
+						// types:
+						{ 's', 's' },
 						// format:
 						"group:%s %s"
 					},
@@ -709,6 +787,8 @@ namespace sdptransform
 						std::regex("^(rtcp-mux)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					},
@@ -723,6 +803,8 @@ namespace sdptransform
 						std::regex("^(rtcp-rsize)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					},
@@ -734,9 +816,11 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^sctpmap:([\\w_\\/]*) (\\S*)(?: (\\S*))?"),
+						std::regex("^sctpmap:(\\d+) (\\S*)(?: (\\d*))?"),
 						// names:
 						{ "sctpmapNumber", "app", "maxMessageSize" },
+						// types:
+						{ 'd', 's', 'd' },
 						// format:
 						"",
 						// formatFunc:
@@ -758,6 +842,8 @@ namespace sdptransform
 						std::regex("x-google-flag:([^\\s]*)"),
 						// names:
 						{ },
+						// types:
+						{ 's' },
 						// format:
 						"x-google-flag:%s"
 					},
@@ -772,6 +858,8 @@ namespace sdptransform
 						std::regex("^rid:([\\d\\w]+) (\\w+)(?: ([\\S| ]*))?"),
 						// names:
 						{ "id", "direction", "params" },
+						// types:
+						{ 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -805,6 +893,8 @@ namespace sdptransform
 						),
 						// names:
 						{ "pt", "dir1", "attrs1", "dir2", "attrs2" },
+						// types:
+						{ 's', 's', 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -836,6 +926,8 @@ namespace sdptransform
 						),
 						// names:
 						{ "dir1", "list1", "dir2", "list2" },
+						// types:
+						{ 's', 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -859,6 +951,8 @@ namespace sdptransform
 						std::regex("^simulcast:[\\s\\t]+([\\S+\\s\t]+)$"),
 						// names:
 						{ "value" },
+						// types:
+						{ 's' },
 						// format:
 						"simulcast: %s"
 					},
@@ -874,6 +968,8 @@ namespace sdptransform
 						std::regex("^framerate:(\\d+(?:$|\\.\\d+))"),
 						// names:
 						{ },
+						// types:
+						{ 'f' },
 						// format:
 						"framerate:%s"
 					},
@@ -888,6 +984,8 @@ namespace sdptransform
 						std::regex("(.*)"),
 						// names:
 						{ "value" },
+						// types:
+						{ 's' },
 						// format:
 						"%s"
 					},

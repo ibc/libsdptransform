@@ -20,6 +20,7 @@ namespace sdptransform
 			std::string push;
 			std::regex reg;
 			std::vector<std::string> names;
+			std::vector<char> types;
 			std::string format;
 			std::function<const std::string(const json&)> formatFunc;
 		};
@@ -36,19 +37,7 @@ namespace sdptransform
 		return parseParams(str);
 	}
 
-	json parsePayloads(const std::string& str);
-
-	json parsePayloads(int number);
-
-	inline json parsePayloads(const json& value)
-	{
-		if (value.is_string())
-			return parsePayloads(value.get<std::string>());
-		else if (value.is_number())
-			return parsePayloads(value.get<int>());
-		else
-			return json::array();
-	}
+	std::vector<int> parsePayloads(const std::string& str);
 
 	json parseImageAttributes(const std::string& str);
 

@@ -4,8 +4,6 @@ C++ version of the [sdp-transform](https://github.com/clux/sdp-transform/) JavaS
 
 **libsdptransform** is a simple parser and writer of SDP. Defines internal grammar based on [RFC4566 - SDP](http://tools.ietf.org/html/rfc4566), [RFC5245 - ICE](http://tools.ietf.org/html/rfc5245), and many more.
 
-For simplicity it will force values that are integers to integers and leave everything else as strings when parsing. The module should be simple to extend or build upon, and is constructed rigorously.
-
 
 ## Usage
 
@@ -15,50 +13,40 @@ For simplicity it will force values that are integers to integers and leave ever
 
 The **libsdptransform** API is exposed in the `sdptransform` C++ namespace.
 
-**libsdptransform** integrates the [JSON for Modern C++](https://github.com/nlohmann/json/) library and exposes it under the `json` C++ namespace. All the API functions expect and/or return a JSON object.
+**libsdptransform** integrates the [JSON for Modern C++](https://github.com/nlohmann/json/) library and exposes it under the `json` C++ namespace.
 
 
 ### This is not JavaScript!
 
 It's important to recall that this is not JavaScript but C++. Operations that are safe on a JavaScript `Object` may not be safe in a C++ JSON object.
 
-So, before reading a JSON value, make sure that its corresponding `key` **does** exit and also check the value type (`int`, `std::string`, `nullptr`, etc) before assigning it to a C++ variable.
+So, before reading a JSON value, make sure that its corresponding `key` **does** exit and also check its type (`int`, `std::string`, `nullptr`, etc.) before assigning it to a C++ variable.
 
 * For example, assuming that the parsed SDP `session` does NOT have a `s=` line (name), the following code would crash:
 
 ```c++
-session.at("name");
+std::string sdpName = session.at("name");
 // =>
 // terminating with uncaught exception of type nlohmann::detail::out_of_range:
 // [json.exception.out_of_range.403] key 'name' not found
 ```
 
-* Now, assuming the SDP has `s=1234`, the following code would also crash (since we are assuming that the value is a string):
+* The safe way is:
 
 ```c++
-std::string sdpName = session.at("name");
-// => 
-// terminating with uncaught exception of type nlohmann::detail::type_error:
-// [json.exception.type_error.302] type must be string, but is number
-```
+std::string sdpName;
 
-* The safe way to retrieve it is:
-
-```c++
 if (session.find("name") != session.end())
 {
-  auto& name = session.at("name");
-
-  if (name.is_string())
-    sdpName = name;
-  else if (name.is_number())
-    sdpName = std::to_string(name.get<int>());
+  // NOTE: The API guarantees that the SDP name is a string (otherwise this
+  // would crash).
+  sdpName = session.at("name");
 }
 ```
 
 * Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object with value `nullptr` (if it did not exist before).
 
-So, it's **strongly** recommended to read the corresponding [JSON documentation](https://github.com/nlohmann/json/).
+It's **strongly** recommended to read the [JSON documentation](https://github.com/nlohmann/json/).
 
 
 ## Usage - Parser
@@ -66,11 +54,9 @@ So, it's **strongly** recommended to read the corresponding [JSON documentation]
 
 ### parse()
 
-Syntax:
+Syntax: `json parse(const std::string& sdp)`
 
-* `json parse(const std::string& sdp)`
-
-Parses the unprocessed SDP string and returns a JSON object. SDP lines can be terminated on `\r\n` (as per specification) or just `\n`.
+Parses an unprocessed SDP string and returns a JSON object. SDP lines can be terminated on `\r\n` (as per specification) or just `\n`.
 
 ```c++
 std::string sdpStr = R"(v=0
@@ -89,12 +75,19 @@ a=sendrecv
 a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
 a=candidate:1 2 UDP 2113667326 203.0.113.1 54401 typ host
 m=video 55400 RTP/SAVPF 97 98
+a=rtcp-fb:* nack
 a=rtpmap:97 H264/90000
 a=fmtp:97 profile-level-id=4d0028;packetization-mode=1
+a=rtcp-fb:97 trr-int 100
+a=rtcp-fb:97 nack rpsi
 a=rtpmap:98 VP8/90000
+a=rtcp-fb:98 trr-int 100
+a=rtcp-fb:98 nack rpsi
 a=sendrecv
 a=candidate:0 1 UDP 2113667327 203.0.113.1 55400 typ host
 a=candidate:1 2 UDP 2113667326 203.0.113.1 55401 typ host
+a=ssrc:1399694169 foo:bar
+a=ssrc:1399694169 baz
 )";
 
 json session = sdptransform::parse(sdpStr);
@@ -119,7 +112,7 @@ Resulting `session` is a JSON object as follows:
       "candidates": [
         {
           "component": 1,
-          "foundation": 0,
+          "foundation": "0",
           "ip": "203.0.113.1",
           "port": 54400,
           "priority": 2113667327,
@@ -128,7 +121,7 @@ Resulting `session` is a JSON object as follows:
         },
         {
           "component": 2,
-          "foundation": 1,
+          "foundation": "1",
           "ip": "203.0.113.1",
           "port": 54401,
           "priority": 2113667326,
@@ -160,7 +153,7 @@ Resulting `session` is a JSON object as follows:
       "candidates": [
         {
           "component": 1,
-          "foundation": 0,
+          "foundation": "0",
           "ip": "203.0.113.1",
           "port": 55400,
           "priority": 2113667327,
@@ -169,7 +162,7 @@ Resulting `session` is a JSON object as follows:
         },
         {
           "component": 2,
-          "foundation": 1,
+          "foundation": "1",
           "ip": "203.0.113.1",
           "port": 55401,
           "priority": 2113667326,
@@ -187,6 +180,32 @@ Resulting `session` is a JSON object as follows:
       "payloads": "97 98",
       "port": 55400,
       "protocol": "RTP/SAVPF",
+      "rtcpFb": [
+        {
+          "payload": "*",
+          "type": "nack"
+        },
+        {
+          "payload": "97",
+          "subtype": "rpsi",
+          "type": "nack"
+        },
+        {
+          "payload": "98",
+          "subtype": "rpsi",
+          "type": "nack"
+        }
+      ],
+      "rtcpFbTrrInt": [
+        {
+          "payload": "97",
+          "value": 100
+        },
+        {
+          "payload": "98",
+          "value": 100
+        }
+      ],
       "rtp": [
         {
           "codec": "H264",
@@ -197,6 +216,17 @@ Resulting `session` is a JSON object as follows:
           "codec": "VP8",
           "payload": 98,
           "rate": 90000
+        }
+      ],
+      "ssrcs": [
+        {
+          "attribute": "foo",
+          "id": 1399694169,
+          "value": "bar"
+        },
+        {
+          "attribute": "baz",
+          "id": 1399694169
         }
       ],
       "type": "video"
@@ -219,19 +249,15 @@ Resulting `session` is a JSON object as follows:
 }
 ```
 
-In this example, only slightly dodgy string coercion case here is for `session.at("media")[i].at("candidates")[i].at("foundation")`, which can be a string, but in this case can be equally parsed as an integer.
-
 
 ### Parser Postprocessing
 
-No excess parsing is done to the raw strings apart from maybe coercing to ints, because the writer is built to be the inverse of the parser. That said, a few helpers have been built in:
+No excess parsing is done to the raw strings because the writer is built to be the inverse of the parser. That said, a few helpers have been built in:
 
 
 #### parseParams()
 
-Syntax:
-
-* `json parseParams(const std::string& str)`
+Syntax: `json parseParams(const std::string& str)`
 
 Parses `fmtp.at("config")` and others such as `rid.at("params")` and returns an object with all the params in a key/value fashion.
 
@@ -244,7 +270,7 @@ Resulting `params` is a JSON object as follows:
 
 ```json
 {
-  "packetization-mode": 1,
+  "packetization-mode": "1",
   "profile-level-id": "4d0028"
 }
 ```
@@ -252,20 +278,16 @@ Resulting `params` is a JSON object as follows:
 
 #### parsePayloads()
 
-Syntax:
+Syntax: `std::vector<int> parsePayloads(const std::string& str)`
 
-* `json parsePayloads(const std::string& str)`
-* `json parsePayloads(int number);`
-* `json parsePayloads(const json& value)`
-
-Returns an array with all the payload advertised in the corresponding m-line.
+Returns a vector with all the payload advertised in the corresponding m-line.
 
 ```c++
 json payloads =
   sdptransform::parsePayloads(session.at("media")[1].at("payloads"));
 ```
 
-Resulting `payloads` is a JSON array as follows:
+Resulting `payloads` is a C++ vector of `int` as follows:
 
 ```json
 [ 97, 98 ]
@@ -274,9 +296,7 @@ Resulting `payloads` is a JSON array as follows:
 
 #### parseImageAttributes()
 
-Syntax:
-
-* `json parseImageAttributes(const std::string& str)`
+Syntax: `json parseImageAttributes(const std::string& str)`
 
 Parses [Generic Image Attributes](https://tools.ietf.org/html/rfc6236). Must be provided with the `attrs1` or `attrs2` string of a `a=imageattr` line. Returns an array of key/value objects.
 
@@ -300,9 +320,7 @@ Resulting `imageAttributes` is a JSON array as follows:
 
 #### parseSimulcastStreamList()
 
-Syntax:
-
-* `json parseSimulcastStreamList(const std::string& str)`
+Syntax: `json parseSimulcastStreamList(const std::string& str)`
 
 Parses [simulcast](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast) streams/formats. Must be provided with the `attrs1` or `attrs2` string of the `a=simulcast` line.
 
@@ -323,9 +341,9 @@ Resulting `simulcastAttributes` is a JSON array as follows:
 
 ```json
 [
-  [ { "paused": false, "scid": 1 }, { "paused": true, "scid": 4 } ],
-  [ { "paused": false, "scid": 2 } ],
-  [ { "paused": false, "scid": 3 } ]
+  [ { "scid": "1", "paused": false }, { "scid": "4", "paused": true } ],
+  [ { "scid": "2", "paused": false } ],
+  [ { "scid": "3", "paused": false } ]
 ]
 ```
 
@@ -335,9 +353,7 @@ Resulting `simulcastAttributes` is a JSON array as follows:
 
 ### write()
 
-Syntax:
-
-* `std::string write(json& session)`
+Syntax: `std::string write(json& session)`
 
 The writer is the inverse of the parser, and will need a struct equivalent to the one returned by it.
 
@@ -367,9 +383,16 @@ m=video 55400 RTP/SAVPF 97 98
 a=rtpmap:97 H264/90000
 a=rtpmap:98 VP8/90000
 a=fmtp:97 profile-level-id=4d0028;packetization-mode=1
+a=rtcp-fb:97 trr-int 100
+a=rtcp-fb:98 trr-int 100
+a=rtcp-fb:* nack
+a=rtcp-fb:97 nack rpsi
+a=rtcp-fb:98 nack rpsi
 a=sendrecv
 a=candidate:0 1 UDP 2113667327 203.0.113.1 55400 typ host
 a=candidate:1 2 UDP 2113667326 203.0.113.1 55401 typ host
+a=ssrc:1399694169 foo:bar
+a=ssrc:1399694169 baz
 ```
 
 The only thing different from the original input is we follow the order specified by the SDP RFC, and we will always do so.

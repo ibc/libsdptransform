@@ -74,25 +74,25 @@ SCENARIO("normalSdp", "[parse]")
 	auto vidFmtp = sdptransform::parseFmtpConfig(video.at("fmtp")[0].at("config"));
 
 	REQUIRE(vidFmtp.at("profile-level-id") == "4d0028");
-	REQUIRE(vidFmtp.at("packetization-mode") == 1);
+	REQUIRE(vidFmtp.at("packetization-mode") == "1");
 	REQUIRE(vidFmtp.at("sprop-parameter-sets") == "Z0IAH5WoFAFuQA==,aM48gA==");
 
 	REQUIRE(video.at("fmtp")[1].at("payload") == 98);
 
 	auto vidFmtp2 = sdptransform::parseFmtpConfig(video.at("fmtp")[1].at("config"));
 
-	REQUIRE(vidFmtp2.at("minptime") == 10);
-	REQUIRE(vidFmtp2.at("useinbandfec") == 1);
+	REQUIRE(vidFmtp2.at("minptime") == "10");
+	REQUIRE(vidFmtp2.at("useinbandfec") == "1");
 
 	REQUIRE(video.at("rtp")[1].at("payload") == 98);
 	REQUIRE(video.at("rtp")[1].at("codec") == "VP8");
 	REQUIRE(video.at("rtp")[1].at("rate") == 90000);
 	REQUIRE(video.at("rtcpFb")[0].at("payload") == "*");
 	REQUIRE(video.at("rtcpFb")[0].at("type") == "nack");
-	REQUIRE(video.at("rtcpFb")[1].at("payload") == 98);
+	REQUIRE(video.at("rtcpFb")[1].at("payload") == "98");
 	REQUIRE(video.at("rtcpFb")[1].at("type") == "nack");
 	REQUIRE(video.at("rtcpFb")[1].at("subtype") == "rpsi");
-	REQUIRE(video.at("rtcpFbTrrInt")[0].at("payload") == 98);
+	REQUIRE(video.at("rtcpFbTrrInt")[0].at("payload") == "98");
 	REQUIRE(video.at("rtcpFbTrrInt")[0].at("value") == 100);
 	REQUIRE(video.at("crypto")[0].at("id") == 1);
 	REQUIRE(video.at("crypto")[0].at("suite") == "AES_CM_128_HMAC_SHA1_32");
@@ -117,21 +117,21 @@ SCENARIO("normalSdp", "[parse]")
 	auto& cs = audio.at("candidates");
 
 	REQUIRE(cs.size() == 4);
-	REQUIRE(cs[0].at("foundation") == 0);
+	REQUIRE(cs[0].at("foundation") == "0");
 	REQUIRE(cs[0].at("component") == 1);
 	REQUIRE(cs[0].at("transport") == "UDP");
 	REQUIRE(cs[0].at("priority") == 2113667327);
 	REQUIRE(cs[0].at("ip") == "203.0.113.1");
 	REQUIRE(cs[0].at("port") == 54400);
 	REQUIRE(cs[0].at("type") == "host");
-	REQUIRE(cs[1].at("foundation") == 1);
+	REQUIRE(cs[1].at("foundation") == "1");
 	REQUIRE(cs[1].at("component") == 2);
 	REQUIRE(cs[1].at("transport") == "UDP");
 	REQUIRE(cs[1].at("priority") == 2113667326);
 	REQUIRE(cs[1].at("ip") == "203.0.113.1");
 	REQUIRE(cs[1].at("port") == 54401);
 	REQUIRE(cs[1].at("type") == "host");
-	REQUIRE(cs[2].at("foundation") == 2);
+	REQUIRE(cs[2].at("foundation") == "2");
 	REQUIRE(cs[2].at("component") == 1);
 	REQUIRE(cs[2].at("transport") == "UDP");
 	REQUIRE(cs[2].at("priority") == 1686052607);
@@ -143,7 +143,7 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(cs[2].at("generation") == 0);
 	REQUIRE(cs[2].at("network-id") == 3);
 	REQUIRE(cs[2].at("network-cost") == 10);
-	REQUIRE(cs[3].at("foundation") == 3);
+	REQUIRE(cs[3].at("foundation") == "3");
 	REQUIRE(cs[3].at("component") == 2);
 	REQUIRE(cs[3].at("transport") == "UDP");
 	REQUIRE(cs[3].at("priority") == 1686052606);
@@ -233,7 +233,7 @@ SCENARIO("hackySdp", "[parse]")
 	REQUIRE(media[0].at("rtcpMux") == "rtcp-mux");
 
 	REQUIRE(media[0].at("rtp")[0].at("codec") == "opus");
-	REQUIRE(media[0].at("rtp")[0].at("encoding") == 2);
+	REQUIRE(media[0].at("rtp")[0].at("encoding") == "2");
 
 	REQUIRE(media[0].at("ssrcs").size() == 4);
 
@@ -344,7 +344,7 @@ SCENARIO("jssipSdp", "[parse]")
 	REQUIRE(
 		audCands[0] ==
 		R"({
-			"foundation" : 1162875081,
+			"foundation" : "1162875081",
 			"component"  : 1,
 			"transport"  : "udp",
 			"priority"   : 2113937151,
@@ -357,7 +357,7 @@ SCENARIO("jssipSdp", "[parse]")
 	REQUIRE(
 		audCands[2] ==
 		R"({
-			"foundation" : 3289912957,
+			"foundation" : "3289912957",
 			"component"  : 1,
 			"transport"  : "udp",
 			"priority"   : 1845501695,
@@ -372,7 +372,7 @@ SCENARIO("jssipSdp", "[parse]")
 	REQUIRE(
 		audCands[4] ==
 		R"({
-			"foundation" : 198437945,
+			"foundation" : "198437945",
 			"component"  : 1,
 			"transport"  : "tcp",
 			"priority"   : 1509957375,
@@ -459,7 +459,7 @@ SCENARIO("onvifSdp", "[parse]")
 	REQUIRE(audio.at("port") == 0);
 	REQUIRE(audio.at("protocol") == "RTP/AVP");
 	REQUIRE(audio.at("control") == "rtsp://example.com/onvif_camera/audio");
-	REQUIRE(audio.at("payloads") == 0);
+	REQUIRE(audio.at("payloads") == "0");
 
 	auto& video = media[1];
 
@@ -467,7 +467,7 @@ SCENARIO("onvifSdp", "[parse]")
 	REQUIRE(video.at("port") == 0);
 	REQUIRE(video.at("protocol") == "RTP/AVP");
 	REQUIRE(video.at("control") == "rtsp://example.com/onvif_camera/video");
-	REQUIRE(video.at("payloads") == 26);
+	REQUIRE(video.at("payloads") == "26");
 
 	auto& application = media[2];
 
@@ -475,7 +475,7 @@ SCENARIO("onvifSdp", "[parse]")
 	REQUIRE(application.at("port") == 0);
 	REQUIRE(application.at("protocol") == "RTP/AVP");
 	REQUIRE(application.at("control") == "rtsp://example.com/onvif_camera/metadata");
-	REQUIRE(application.at("payloads") == 107);
+	REQUIRE(application.at("payloads") == "107");
 	REQUIRE(application.at("direction") == "recvonly");
 	REQUIRE(application.at("rtp")[0].at("payload") == 107);
 	REQUIRE(application.at("rtp")[0].at("codec") == "vnd.onvif.metadata");
@@ -531,7 +531,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("rids")[0] ==
 		R"({
-			"id"        : 1,
+			"id"        : "1",
 			"direction" : "send",
 			"params"    : "pt=97;max-width=1280;max-height=720;max-fps=30"
 		})"_json
@@ -541,7 +541,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("rids")[1] ==
 		R"({
-			"id"        : 2,
+			"id"        : "2",
 			"direction" : "send",
 			"params"    : "pt=98"
 		})"_json
@@ -551,7 +551,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("rids")[2] ==
 		R"({
-			"id"        : 3,
+			"id"        : "3",
 			"direction" : "send",
 			"params"    : "pt=99"
 		})"_json
@@ -561,7 +561,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("rids")[3] ==
 		R"({
-			"id"        : 4,
+			"id"        : "4",
 			"direction" : "send",
 			"params"    : "pt=100"
 		})"_json
@@ -583,10 +583,10 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid1Params ==
 		R"({
-			"pt"         : 97,
-			"max-width"  : 1280,
-			"max-height" : 720,
-			"max-fps"    : 30
+			"pt"         : "97",
+			"max-width"  : "1280",
+			"max-height" : "720",
+			"max-fps"    : "30"
 		})"_json
 	);
 
@@ -596,7 +596,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid2Params ==
 		R"({
-			"pt" : 98
+			"pt" : "98"
 		})"_json
 	);
 
@@ -606,7 +606,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid3Params ==
 		R"({
-			"pt" : 99
+			"pt" : "99"
 		})"_json
 	);
 
@@ -616,7 +616,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid4Params ==
 		R"({
-			"pt" : 100
+			"pt" : "100"
 		})"_json
 	);
 
@@ -626,7 +626,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid5Params ==
 		R"({
-			"pt" : 97
+			"pt" : "97"
 		})"_json
 	);
 
@@ -637,7 +637,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("imageattrs")[0] ==
 		R"({
-			"pt"     : 97,
+			"pt"     : "97",
 			"dir1"   : "send",
 			"attrs1" : "[x=1280,y=720]",
 			"dir2"   : "recv",
@@ -649,7 +649,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("imageattrs")[1] ==
 		R"({
-			"pt"     : 98,
+			"pt"     : "98",
 			"dir1"   : "send",
 			"attrs1" : "[x=320,y=180]"
 		})"_json
@@ -659,7 +659,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("imageattrs")[2] ==
 		R"({
-			"pt"     : 99,
+			"pt"     : "99",
 			"dir1"   : "send",
 			"attrs1" : "[x=160,y=90]"
 		})"_json
@@ -669,7 +669,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		video.at("imageattrs")[3] ==
 		R"({
-			"pt"     : 100,
+			"pt"     : "100",
 			"dir1"   : "recv",
 			"attrs1" : "[x=1280,y=720] [x=320,y=180]",
 			"dir2"   : "send",
@@ -771,9 +771,9 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		simulcastSendStreams ==
 		R"([
-			[ { "scid": 1, "paused": false }, { "scid": 4, "paused": true } ],
-			[ { "scid": 2, "paused": false } ],
-			[ { "scid": 3, "paused": false } ]
+			[ { "scid": "1", "paused": false }, { "scid": "4", "paused": true } ],
+			[ { "scid": "2", "paused": false } ],
+			[ { "scid": "3", "paused": false } ]
 		])"_json
 	);
 

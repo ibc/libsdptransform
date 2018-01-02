@@ -178,16 +178,12 @@ namespace sdptransform
 				{
 					linestream << "%";
 				}
-				else if (str == "%s")
+				else if (str == "%s" || str == "%d")
 				{
 					if (arg.is_string())
 						linestream << arg.get<std::string>();
 					else
 						linestream << arg;
-				}
-				else if (str == "%d")
-				{
-					linestream << arg;
 				}
 				else if (str == "%v")
 				{

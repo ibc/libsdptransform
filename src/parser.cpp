@@ -13,16 +13,17 @@ namespace sdptransform
 		const std::smatch& match,
 		json& location,
 		const std::vector<std::string>& names,
-		const std::string& rawName
+		const std::string& rawName,
+		const std::vector<char>& types
 	);
 
-	json toNumberIfNumber(const std::string& str);
+	json toType(const std::string& str, char type);
 
 	bool isNumber(const std::string& str);
 
 	void trim(std::string &str);
 
-	void insertParam(json& o, const std::string& str);
+	void insertParam(json& o, const std::string& str, char type);
 
 	json parse(const std::string& sdp)
 	{
@@ -55,7 +56,9 @@ namespace sdptransform
 				m["fmtp"] = json::array();
 
 				media.push_back(m);
-				location = std::addressof(media[media.size() - 1]); // Point at latest media line.
+
+				// Point at latest media line.
+				location = std::addressof(media[media.size() - 1]);
 			}
 
 			if (grammar::rulesMap.find(type) == grammar::rulesMap.end())
@@ -74,7 +77,8 @@ namespace sdptransform
 			}
 		}
 
-		session["media"] = media; // Link it up.
+		// Link it up.
+		session["media"] = media;
 
 		return session;
 	}
@@ -92,32 +96,23 @@ namespace sdptransform
 			if (param.length() == 0)
 				continue;
 
-			insertParam(obj, param);
+			insertParam(obj, param, 's');
 		}
 
 		return obj;
 	}
 
-	json parsePayloads(const std::string& str)
+	std::vector<int> parsePayloads(const std::string& str)
 	{
-		json arr = json::array();
+		std::vector<int> arr;
 
 		std::stringstream ss(str);
 		std::string payload;
 
 		while (std::getline(ss, payload, ' '))
 		{
-			arr.push_back(toNumberIfNumber(payload));
+			arr.push_back(std::stoi(payload));
 		}
-
-		return arr;
-	}
-
-	json parsePayloads(int number)
-	{
-		json arr = json::array();
-
-		arr.push_back(number);
 
 		return arr;
 	}
@@ -150,7 +145,7 @@ namespace sdptransform
 				if (param.length() == 0)
 					continue;
 
-				insertParam(obj, param);
+				insertParam(obj, param, 'd');
 			}
 
 			arr.push_back(obj);
@@ -183,12 +178,12 @@ namespace sdptransform
 
 				if (format[0] != '~')
 				{
-					obj["scid"] = toNumberIfNumber(format);
+					obj["scid"] = format;
 					obj["paused"] = false;
 				}
 				else
 				{
-					obj["scid"] = toNumberIfNumber(format.substr(1));
+					obj["scid"] = format.substr(1);
 					obj["paused"] = true;
 				}
 
@@ -220,10 +215,12 @@ namespace sdptransform
 
 		json object = json::object();
 		json& keyLocation = !rule.push.empty() ?
-			object : // Blank object that will be pushed.
-			needsBlank ? location[rule.name] : location; // Otherwise named location or root.
+			// Blank object that will be pushed.
+			object :
+			// Otherwise named location or root.
+			needsBlank ? location[rule.name] : location;
 
-		attachProperties(match, keyLocation, rule.names, rule.name);
+		attachProperties(match, keyLocation, rule.names, rule.name, rule.types);
 
 		if (!rule.push.empty())
 			location[rule.push].push_back(keyLocation);
@@ -233,51 +230,65 @@ namespace sdptransform
 		const std::smatch& match,
 		json& location,
 		const std::vector<std::string>& names,
-		const std::string& rawName
+		const std::string& rawName,
+		const std::vector<char>& types
 	)
 	{
 		if (!rawName.empty() && names.empty())
 		{
-			location[rawName] = toNumberIfNumber(match[1].str());
+			location[rawName] = toType(match[1].str(), types[0]);
 		}
 		else
 		{
 			for (size_t i = 0; i < names.size(); ++i)
 			{
 				if (i + 1 < match.size() && !match[i + 1].str().empty())
-					location[names[i]] = toNumberIfNumber(match[i + 1].str());
+				{
+					location[names[i]] = toType(match[i + 1].str(), types[i]);
+				}
 			}
 		}
 	}
 
-	json toNumberIfNumber(const std::string& str)
+	json toType(const std::string& str, char type)
 	{
 		// https://stackoverflow.com/a/447307/4827838.
 
-		// Test long long.
+		switch (type)
 		{
-			std::istringstream iss(str);
-			long long ll;
+			case 's':
+			{
+				return str;
+			}
 
-			iss >> std::noskipws >> ll;
+			case 'd':
+			{
+				std::istringstream iss(str);
+				long long ll;
 
-			if (iss.eof() && !iss.fail())
-				return std::stoll(str);
+				iss >> std::noskipws >> ll;
+
+				if (iss.eof() && !iss.fail())
+					return std::stoll(str);
+				else
+					return 0;
+			}
+
+			case 'f':
+			{
+				std::istringstream iss(str);
+				double d;
+
+				iss >> std::noskipws >> d;
+
+				if (iss.eof() && !iss.fail())
+					return std::stod(str);
+				else
+					return 0.0f;
+			}
 		}
 
-		// Test double.
-		{
-			std::istringstream iss(str);
-			double d;
-
-			iss >> std::noskipws >> d;
-
-			if (iss.eof() && !iss.fail())
-				return std::stod(str);
-		}
-
-		// Otherwise return it as a string.
-		return str;
+		return nullptr;
 	}
 
 	void trim(std::string &str)
@@ -296,7 +307,7 @@ namespace sdptransform
 		);
 	}
 
-	void insertParam(json& o, const std::string& str)
+	void insertParam(json& o, const std::string& str, char type)
 	{
 		static const std::regex KeyValueRegex("^\\s*([^= ]+)\\s*=\\s*([^ ]+)$");
 
@@ -309,6 +320,6 @@ namespace sdptransform
 			return;
 
 		// Insert into the given JSON object.
-		o[match[1].str()] = toNumberIfNumber(match[2].str());
+		o[match[1].str()] = toType(match[2].str(), type);
 	}
 }

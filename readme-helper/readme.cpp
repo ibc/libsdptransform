@@ -4,7 +4,7 @@
 
 static std::string sdpStr = R"(v=0
 o=- 20518 0 IN IP4 203.0.113.1
-s=1234
+s=
 t=0 0
 c=IN IP4 203.0.113.1
 a=ice-ufrag:F7gI
@@ -18,12 +18,19 @@ a=sendrecv
 a=candidate:0 1 UDP 2113667327 203.0.113.1 54400 typ host
 a=candidate:1 2 UDP 2113667326 203.0.113.1 54401 typ host
 m=video 55400 RTP/SAVPF 97 98
+a=rtcp-fb:* nack
 a=rtpmap:97 H264/90000
 a=fmtp:97 profile-level-id=4d0028;packetization-mode=1
+a=rtcp-fb:97 trr-int 100
+a=rtcp-fb:97 nack rpsi
 a=rtpmap:98 VP8/90000
+a=rtcp-fb:98 trr-int 100
+a=rtcp-fb:98 nack rpsi
 a=sendrecv
 a=candidate:0 1 UDP 2113667327 203.0.113.1 55400 typ host
 a=candidate:1 2 UDP 2113667326 203.0.113.1 55401 typ host
+a=ssrc:1399694169 foo:bar
+a=ssrc:1399694169 baz
 )";
 
 static json session;
