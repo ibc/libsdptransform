@@ -246,7 +246,7 @@ if (
 | --------------- | ------- | -------------------------
 | id              | integer | 1
 | suite           | string  | "AES_CM_128_HMAC_SHA1_80"
-| config          | string  | "inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32"
+| config          | string  | "inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR\|2^20\|1:32"
 | sessionConfig   | string  |
 
 
