@@ -704,7 +704,7 @@ namespace sdptransform
 						// push:
 						"ssrcs",
 						// reg:
-						std::regex("^ssrc:(\\d*) ([\\w_]*)(?::(.*))?"),
+						std::regex("^ssrc:(\\d*) ([\\w_-]*)(?::(.*))?"),
 						// names:
 						{ "id", "attribute", "value" },
 						// types:

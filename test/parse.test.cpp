@@ -97,7 +97,7 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(video.at("crypto")[0].at("id") == 1);
 	REQUIRE(video.at("crypto")[0].at("suite") == "AES_CM_128_HMAC_SHA1_32");
 	REQUIRE(video.at("crypto")[0].at("config") == "inline:keNcG3HezSNID7LmfDa9J4lfdUL8W1F7TNJKcbuy|2^20|1:32");
-	REQUIRE(video.at("ssrcs").size() == 2);
+	REQUIRE(video.at("ssrcs").size() == 3);
 	REQUIRE(
 		video.at("ssrcs")[0] ==
 		R"({
@@ -111,6 +111,14 @@ SCENARIO("normalSdp", "[parse]")
 		R"({
 			"id"        : 1399694169,
 			"attribute" : "baz"
+		})"_json
+	);
+	REQUIRE(
+		video.at("ssrcs")[2] ==
+		R"({
+			"id"        : 1399694169,
+			"attribute" : "foo-bar",
+			"value"     : "baz"
 		})"_json
 	);
 
