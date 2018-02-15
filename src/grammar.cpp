@@ -973,7 +973,22 @@ namespace sdptransform
 						// format:
 						"framerate:%s"
 					},
-
+					// a=source-filter: incl IN IP4 239.5.2.31 10.1.15.5
+					{
+						// name:
+						"sourceFilter",
+						// push:
+						"",
+						// reg:
+						std::regex("^source-filter:*(excl|incl) (\\S*) (IP4|IP6|\\*) (\\S*) (.*)"),
+						// names:
+						{"filterMode", "netType", "addressTypes", "destAddress", "srcList"},
+						// types:
+						{ 's', 's', 's', 's', 's' },
+						// format:
+						"source-filter: %s %s %s %s %s"
+					},
+					
 					// Any a= that we don't understand is kepts verbatim on media.invalid.
 					{
 						// name:
