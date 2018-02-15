@@ -819,15 +819,15 @@ SCENARIO("st2022-6Sdp", "[parse]")
 	REQUIRE(session.find("media") != session.end());
 	auto& media = session.at("media");
 
-  // no invalid node
+	// no invalid node
 	REQUIRE(media.find("invalid") == media.end())
 
-  // check sourceFilter node exists
+	// check sourceFilter node exists
 	auto& video = media[1];
 	REQUIRE(video.find("sourceFilter") != video.end());
 	auto& sourceFilter = video.at("sourceFilter");
 
-  // check expected values are present
+	// check expected values are present
 	REQUIRE(sourceFilter.at("filterMode") == "incl");
 	REQUIRE(sourceFilter.at("netType") == "IN");
 	REQUIRE(sourceFilter.at("addressTypes") == "IP4");
