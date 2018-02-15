@@ -808,3 +808,29 @@ SCENARIO("simulcastSdp", "[parse]")
 
 	REQUIRE(newSdp == sdp);
 }
+
+SCENARIO("st2022-6Sdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/st2022-6.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	// session sanity check
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+	auto& media = session.at("media");
+
+  // no invalid node
+	REQUIRE(media.find("invalid") == media.end())
+
+  // check sourceFilter node exists
+	auto& video = media[1];
+	REQUIRE(video.find("sourceFilter") != video.end());
+	auto& sourceFilter = video.at("sourceFilter");
+
+  // check expected values are present
+	REQUIRE(sourceFilter.at("filterMode") == "incl");
+	REQUIRE(sourceFilter.at("netType") == "IN");
+	REQUIRE(sourceFilter.at("addressTypes") == "IP4");
+	REQUIRE(sourceFilter.at("destAddress") == "239.0.0.1");
+	REQUIRE(sourceFilter.at("srcList") == "192.168.20.20");
+}
