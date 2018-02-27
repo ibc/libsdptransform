@@ -820,7 +820,7 @@ SCENARIO("st2022-6Sdp", "[parse]")
 	auto& media = session.at("media");
 
 	// no invalid node
-	REQUIRE(media.find("invalid") == media.end())
+	REQUIRE(media.find("invalid") == media.end());
 
 	// check sourceFilter node exists
 	auto& video = media[1];

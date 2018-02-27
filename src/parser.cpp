@@ -3,7 +3,7 @@
 #include <memory>    // std::addressof()
 #include <sstream>   // std::stringstream, std::istringstream
 #include <algorithm> // std::find_if()
-#include <locale>    // std::isspace()
+#include <cctype>    // std::isspace()
 
 namespace sdptransform
 {
@@ -38,7 +38,7 @@ namespace sdptransform
 		while (std::getline(sdpstream, line, '\n'))
 		{
 			// Remove \r if lines are separated with \r\n (as mandated in SDP).
-			if (line[line.length() - 1] == '\r')
+			if (line.size() && line[line.length() - 1] == '\r')
 				line.pop_back();
 
 			// Ensure it's a valid SDP line.
@@ -296,13 +296,13 @@ namespace sdptransform
 		str.erase(
 			str.begin(),
 			std::find_if(
-				str.begin(), str.end(), [](int ch) { return !std::isspace(ch); }
+				str.begin(), str.end(), [](unsigned char ch) { return !std::isspace(ch); }
 			)
 		);
 
 		str.erase(
 			std::find_if(
-				str.rbegin(), str.rend(), [](int ch) { return !std::isspace(ch); }).base(),
+				str.rbegin(), str.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
 			str.end()
 		);
 	}
