@@ -980,15 +980,15 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^source-filter:*(excl|incl) (\\S*) (IP4|IP6|\\*) (\\S*) (.*)"),
+						std::regex("^source-filter:[\\s\\t]+(excl|incl) (\\S*) (IP4|IP6|\\*) (\\S*) (.*)"),
 						// names:
-						{"filterMode", "netType", "addressTypes", "destAddress", "srcList"},
+						{ "filterMode", "netType", "addressTypes", "destAddress", "srcList" },
 						// types:
 						{ 's', 's', 's', 's', 's' },
 						// format:
 						"source-filter: %s %s %s %s %s"
 					},
-					
+
 					// Any a= that we don't understand is kepts verbatim on media.invalid.
 					{
 						// name:

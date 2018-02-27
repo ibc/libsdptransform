@@ -814,20 +814,20 @@ SCENARIO("st2022-6Sdp", "[parse]")
 	auto sdp = helpers::readFile("test/data/st2022-6.sdp");
 	auto session = sdptransform::parse(sdp);
 
-	// session sanity check
+	// Session sanity check.
 	REQUIRE(session.size() > 0);
 	REQUIRE(session.find("media") != session.end());
 	auto& media = session.at("media");
 
-	// no invalid node
+	// No invalid node
 	REQUIRE(media.find("invalid") == media.end());
 
-	// check sourceFilter node exists
-	auto& video = media[1];
+	// Check sourceFilter node exists.
+	auto& video = media[0];
 	REQUIRE(video.find("sourceFilter") != video.end());
 	auto& sourceFilter = video.at("sourceFilter");
 
-	// check expected values are present
+	// Check expected values are present.
 	REQUIRE(sourceFilter.at("filterMode") == "incl");
 	REQUIRE(sourceFilter.at("netType") == "IN");
 	REQUIRE(sourceFilter.at("addressTypes") == "IP4");
