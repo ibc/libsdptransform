@@ -1,0 +1,36 @@
+language: c++
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - g++-6
+      - cmake
+    sources:
+      - ubuntu-toolchain-r-test
+
+matrix:
+  include:
+    # GCC 6
+    - os: linux
+      env: COMPILER=g++-6
+      compiler: gcc
+
+    # Clang 3.9
+    - os: linux
+      env: LLVM_VERSION=3.9.0
+      compiler: clang
+
+install:
+  - cmake . -Bbuild
+  - cmake --build build
+
+scripts:
+  - ./build/test/test_sdptransform
+
+notifications:
+  email:
+    recipients:
+      - ibc@aliax.net
+    on_success: change
+    on_failure: always
