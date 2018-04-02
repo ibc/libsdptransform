@@ -834,3 +834,47 @@ SCENARIO("st2022-6Sdp", "[parse]")
 	REQUIRE(sourceFilter.at("destAddress") == "239.0.0.1");
 	REQUIRE(sourceFilter.at("srcList") == "192.168.20.20");
 }
+
+SCENARIO("st2110-20Sdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/st2110-20.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	// Session sanity check.
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+	auto& media = session.at("media");
+
+	// No invalid node
+	REQUIRE(media.find("invalid") == media.end());
+
+	// Check sourceFilter node exists.
+	auto& video = media[0];
+	REQUIRE(video.find("sourceFilter") != video.end());
+	auto& sourceFilter = video.at("sourceFilter");
+
+	// Check expected values are present.
+	REQUIRE(sourceFilter.at("filterMode") == "incl");
+	REQUIRE(sourceFilter.at("netType") == "IN");
+	REQUIRE(sourceFilter.at("addressTypes") == "IP4");
+	REQUIRE(sourceFilter.at("destAddress") == "239.100.9.10");
+	REQUIRE(sourceFilter.at("srcList") == "192.168.100.2");
+
+	auto fmtp0Params = sdptransform::parseParams(video.at("fmtp")[0].at("config"));
+
+	REQUIRE(
+		fmtp0Params ==
+		R"({
+			"sampling"       : "YCbCr-4:2:2",
+			"width"          : "1280",
+			"height"         : "720",
+			"interlace"      : "",
+			"exactframerate" : "60000/1001",
+			"depth"          : "10",
+			"TCS"            : "SDR",
+			"colorimetry"    : "BT709",
+			"PM"             : "2110GPM",
+			"SSN"            : "ST2110-20:2017"
+		})"_json
+	);
+}

@@ -309,15 +309,18 @@ namespace sdptransform
 
 	void insertParam(json& o, const std::string& str, char type)
 	{
-		static const std::regex KeyValueRegex("^\\s*([^= ]+)\\s*=\\s*([^ ]+)$");
+		static const std::regex KeyValueRegex("^\\s*([^= ]+)(?:\\s*=\\s*([^ ]+))?$");
 
 		std::smatch match;
 
 		std::regex_match(str, match, KeyValueRegex);
 
-		// Wrong key value syntax.
-		if (match.size() != 3)
+		if (match.size() == 0)
 			return;
+
+		// NOTE: match[2] maybe not exist in the given str if the param has no
+		// value. We may insert nullptr then, but it's easier to just set an empty
+		// string.
 
 		// Insert into the given JSON object.
 		o[match[1].str()] = toType(match[2].str(), type);
