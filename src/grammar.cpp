@@ -989,6 +989,54 @@ namespace sdptransform
 						"source-filter: %s %s %s %s %s"
 					},
 
+					// a=ts-refclk: as in aes67
+					{
+						// name:
+						"ts-refclk",
+						// push:
+						"",
+						// reg:
+						std::regex("^ts-refclk:(.*)"),
+						// names:
+						{ },
+						// types:
+						{ 's' },
+						// format:
+						"ts-refclk:%s"
+					},
+
+					// a=mediaclk: as in aes67
+					{
+						// name:
+						"mediaclk",
+						// push:
+						"",
+						// reg:
+						std::regex("^mediaclk:(.*)"),
+						// names:
+						{ },
+						// types:
+						{ 's' },
+						// format:
+						"mediaclk:%s"
+					},
+
+					// a=sync-time: as in aes67
+					{
+						// name:
+						"sync-time",
+						// push:
+						"",
+						// reg:
+						std::regex("\\d"),
+						// names:
+						{ },
+						// types:
+						{ 'd' },
+						// format:
+						"sync-time:%d"
+					},
+
 					// Any a= that we don't understand is kepts verbatim on media.invalid.
 					{
 						// name:

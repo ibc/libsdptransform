@@ -878,3 +878,32 @@ SCENARIO("st2110-20Sdp", "[parse]")
 		})"_json
 	);
 }
+
+SCENARIO("aes67", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/aes67.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& audio = media[0];
+	auto audioPayloads = sdptransform::parsePayloads(audio.at("payloads"));
+
+	REQUIRE(audioPayloads == R"([ 96 ])"_json);
+
+	REQUIRE(audio.at("type") == "audio");
+	REQUIRE(audio.at("protocol") == "RTP/AVP");
+	REQUIRE(audio.at("rtp")[0].at("payload") == 96);
+	REQUIRE(audio.at("rtp")[0].at("codec") == "L24");
+	REQUIRE(audio.at("rtp")[0].at("rate") == 48000);
+	REQUIRE(audio.at("rtp")[0].at("encoding") == "2");
+	REQUIRE(audio.at("ts-refclk") == "ptp=IEEE1588-2008:00-1D-C1-FF-FE-12-00-A4:0");
+	REQUIRE(audio.at("mediaclk") == "direct=0");
+	REQUIRE(audio.at("sync-time") == 0);
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}
