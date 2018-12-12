@@ -23,12 +23,13 @@ matrix:
     env:
     - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 before_install:
+- echo "before_install: TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
 - eval "${MATRIX_EVAL}"
 install:
 - cmake . -Bbuild
 - cmake --build build
 scripts:
-- echo "TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
+- echo "scripts: TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
 - ${TRAVIS_BUILD_DIR}/build/test/test_sdptransform
 notifications:
   email:
