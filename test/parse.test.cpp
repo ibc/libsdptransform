@@ -899,9 +899,9 @@ SCENARIO("aes67", "[parse]")
 	REQUIRE(audio.at("rtp")[0].at("codec") == "L24");
 	REQUIRE(audio.at("rtp")[0].at("rate") == 48000);
 	REQUIRE(audio.at("rtp")[0].at("encoding") == "2");
-	REQUIRE(audio.at("ts-refclk") == "ptp=IEEE1588-2008:00-1D-C1-FF-FE-12-00-A4:0");
+	REQUIRE(audio.at("tsRefclk") == "ptp=IEEE1588-2008:00-1D-C1-FF-FE-12-00-A4:0");
 	REQUIRE(audio.at("mediaclk") == "direct=0");
-	REQUIRE(audio.at("sync-time") == 0);
+	REQUIRE(audio.at("syncTime") == 0);
 
 	auto newSdp = sdptransform::write(session);
 

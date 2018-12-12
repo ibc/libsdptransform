@@ -32,7 +32,7 @@ if (
 `v=0`
 
 * type: string 
-* example: 0
+* example: "0"
 
 
 ### origin
@@ -50,9 +50,6 @@ if (
 | ipVer           | integer | 4
 | adddress        | string  | "203.0.113.1"
 `s=-`
-
-* type: string 
-* example: "-"
 
 
 ### description
@@ -526,7 +523,9 @@ if (
 | list1           | string  | "1,2,3;~4,~5"
 | dir2            | string  | "recv"
 | list2           | string  | "6;~7,~8"
-ast_03
+
+
+### simulcast_03
 
 Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast-03) (implemented by some browsers).
 
@@ -545,10 +544,10 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 `a=framerate:29.97`
 
 * type: float
-* example: "25.0"
+* example: 25.0
 
 
-### ts-refclk
+### tsRefclk
 
 `a=ts-refclk:ptp=IEEE1588-2008:00-50-C2-FF-FE-90-04-37:0`
 
@@ -566,12 +565,12 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 * example: "direct=0"
 
 
-### sync-time
+### syncTime
 
 `a=sync-time:0`
 
 * type: integer
-* example: "0"
+* example: 0
 
 
 ### invalid

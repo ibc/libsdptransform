@@ -299,11 +299,11 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return hasValue(o, "encoding") ?
-								"rtpmap:%d %s/%s/%s" :
-								hasValue(o, "rate") ?
-									"rtpmap:%d %s/%s" :
-									"rtpmap:%d %s";
+							return hasValue(o, "encoding")
+								? "rtpmap:%d %s/%s/%s"
+								: hasValue(o, "rate")
+									? "rtpmap:%d %s/%s"
+									: "rtpmap:%d %s";
 						}
 					},
 
@@ -315,7 +315,7 @@ namespace sdptransform
 						// push:
 						"fmtp",
 						// reg:
-						std::regex("^fmtp:(\\d*) ([\\S| ]*)"),
+						std::regex("^fmtp:(\\d*) (.*)"),
 						// names:
 						{ "payload", "config" },
 						// types:
@@ -357,9 +357,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return hasValue(o, "address") ?
-								"rtcp:%d %s IP%d %s" :
-								"rtcp:%d";
+							return hasValue(o, "address")
+								? "rtcp:%d %s IP%d %s"
+								: "rtcp:%d";
 						}
 					},
 
@@ -396,9 +396,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return hasValue(o, "subtype") ?
-								"rtcp-fb:%s %s %s" :
-								"rtcp-fb:%s %s";
+							return hasValue(o, "subtype")
+								? "rtcp-fb:%s %s %s"
+								: "rtcp-fb:%s %s";
 						}
 					},
 
@@ -444,9 +444,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return hasValue(o, "sessionConfig") ?
-								"crypto:%d %s %s %s" :
-								"crypto:%d %s %s";
+							return hasValue(o, "sessionConfig")
+								? "crypto:%d %s %s %s"
+								: "crypto:%d %s %s";
 						}
 					},
 
@@ -826,9 +826,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return hasValue(o, "maxMessageSize") ?
-								"sctpmap:%s %s %s" :
-								"sctpmap:%s %s";
+							return hasValue(o, "maxMessageSize")
+								? "sctpmap:%s %s %s"
+								: "sctpmap:%s %s";
 						}
 					},
 
@@ -855,7 +855,7 @@ namespace sdptransform
 						// push:
 						"rids",
 						// reg:
-						std::regex("^rid:([\\d\\w]+) (\\w+)(?: ([\\S| ]*))?"),
+						std::regex("^rid:([\\d\\w]+) (\\w+)(?: (.*))?"),
 						// names:
 						{ "id", "direction", "params" },
 						// types:
@@ -865,9 +865,9 @@ namespace sdptransform
 						// formatFunc:
 						[](const json& o)
 						{
-							return hasValue(o, "params") ?
-								"rid:%s %s %s" :
-								"rid:%s %s";
+							return hasValue(o, "params")
+								? "rid:%s %s %s"
+								: "rid:%s %s";
 						}
 					},
 
@@ -948,7 +948,7 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^simulcast:[\\s\\t]+([\\S+\\s\t]+)$"),
+						std::regex("^simulcast: (.+)$"),
 						// names:
 						{ "value" },
 						// types:
@@ -973,6 +973,7 @@ namespace sdptransform
 						// format:
 						"framerate:%s"
 					},
+
 					// a=source-filter: incl IN IP4 239.5.2.31 10.1.15.5
 					{
 						// name:
@@ -989,10 +990,10 @@ namespace sdptransform
 						"source-filter: %s %s %s %s %s"
 					},
 
-					// a=ts-refclk: as in aes67
+					// a=ts-refclk:ptp=IEEE1588-2008:00-50-C2-FF-FE-90-04-37:0
 					{
 						// name:
-						"ts-refclk",
+						"tsRefclk",
 						// push:
 						"",
 						// reg:
@@ -1005,7 +1006,7 @@ namespace sdptransform
 						"ts-refclk:%s"
 					},
 
-					// a=mediaclk: as in aes67
+					// a=mediaclk:direct=0
 					{
 						// name:
 						"mediaclk",
@@ -1021,14 +1022,14 @@ namespace sdptransform
 						"mediaclk:%s"
 					},
 
-					// a=sync-time: as in aes67
+					// a=sync-time:0
 					{
 						// name:
-						"sync-time",
+						"syncTime",
 						// push:
 						"",
 						// reg:
-						std::regex("\\d"),
+						std::regex("sync-time:(\\d+)$"),
 						// names:
 						{ },
 						// types:

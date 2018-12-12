@@ -113,9 +113,9 @@ namespace sdptransform
 	{
 		static const std::regex FormatRegex("%[sdv%]");
 
-		const std::string format = rule.format.empty() ?
-			(rule.formatFunc(!rule.push.empty() ? location : location.at(rule.name))) :
-			rule.format;
+		const std::string format = rule.format.empty()
+			? (rule.formatFunc(!rule.push.empty() ? location : location.at(rule.name)))
+			: rule.format;
 
 		std::vector<json> args;
 

@@ -46,7 +46,7 @@ function get_dep()
 function get_json()
 {
 	GIT_REPO="https://github.com/nlohmann/json.git"
-	GIT_TAG="v3.0.0"
+	GIT_TAG="v3.4.0"
 	DEST="deps/json"
 
 	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
@@ -58,13 +58,13 @@ function get_json()
 function get_catch()
 {
 	GIT_REPO="https://github.com/philsquared/Catch.git"
-	GIT_TAG="v1.11.0"
+	GIT_TAG="v2.5.0"
 	DEST="deps/catch"
 
 	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
 
 	echo ">>> [INFO] copying include file to test/include/ directory ..."
-	cp ${DEST}/single_include/catch.hpp test/include/
+	cp ${DEST}/single_include/catch2/catch.hpp test/include/
 }
 
 case "${DEP}" in

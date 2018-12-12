@@ -214,11 +214,13 @@ namespace sdptransform
 		std::regex_search(content, match, rule.reg);
 
 		json object = json::object();
-		json& keyLocation = !rule.push.empty() ?
+		json& keyLocation = !rule.push.empty()
 			// Blank object that will be pushed.
-			object :
+			? object
 			// Otherwise named location or root.
-			needsBlank ? location[rule.name] : location;
+			: needsBlank
+				? location[rule.name]
+				: location;
 
 		attachProperties(match, keyLocation, rule.names, rule.name, rule.types);
 
