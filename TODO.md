@@ -1,3 +1,0 @@
-# TODO
-
-* C++ linter.

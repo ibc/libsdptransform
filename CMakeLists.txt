@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(sdptransform VERSION 1.1.0)
+project(sdptransform VERSION 1.1.1)
 
 # For CMake >= 3.1.
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 # For CMake < 3.1.
 add_compile_options(-std=c++11)
 
