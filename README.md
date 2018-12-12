@@ -409,6 +409,7 @@ The only thing different from the original input is we follow the order specifie
 ```bash
 git clone https://github.com/ibc/libsdptransform.git
 cd libsdptransform/
+cmake . -Bbuild
 make install -C build/ # or: cd build/ && make install
 ```
 
@@ -423,13 +424,13 @@ Depending on the host, it will generate the following static lib and header file
 
 ## Development
 
-* Build the lib by executing in the root folder:
+* Build the lib:
 
 ```bash
 $ cmake . -Bbuild
 ```
 
-* Run test units by executing in the root folder:
+* Run test units:
 
 ```bash
 $ ./scripts/run-test.sh
