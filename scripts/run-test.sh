@@ -19,12 +19,5 @@ fi
 # Compile.
 cmake --build build
 
-if [ "$1" == "readme" ]; then
-	# Run readme helper.
-	./build/readme-helper/sdptransform_readme_helper
-
-	exit 0
-fi
-
 # Run test.
 ./build/test/test_sdptransform

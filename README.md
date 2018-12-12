@@ -421,6 +421,21 @@ Depending on the host, it will generate the following static lib and header file
 ```
 
 
+## Development
+
+* Build the lib by executing in the root folder:
+
+```bash
+$ cmake . -Bbuild
+```
+
+* Run test units by executing in the root folder:
+
+```bash
+$ ./scripts/run-test.sh
+```
+
+
 ## Author
 
 Iñaki Baz Castillo [[website](https://inakibaz.me)|[github](https://github.com/ibc/)]
