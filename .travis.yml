@@ -1,0 +1,47 @@
+dist: trusty
+language: c++
+matrix:
+  include:
+  - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.9
+          - cmake
+    env:
+    - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+  - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+          - g++-7
+          - cmake
+    env:
+    - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+  - os: linux
+    addons:
+      apt:
+        sources:
+        - llvm-toolchain-trusty-5.0
+        packages:
+        - clang-5.0
+        - cmake
+    env:
+    - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+before_install:
+- eval "${MATRIX_EVAL}"
+install:
+- cmake . -Bbuild
+- cmake --build build
+scripts:
+- ./build/test/test_sdptransform
+notifications:
+  email:
+    recipients:
+    - ibc@aliax.net
+    on_success: change
+    on_failure: always
