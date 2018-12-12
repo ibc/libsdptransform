@@ -28,7 +28,7 @@ before_install:
 install:
 - cmake . -Bbuild
 - cmake --build build
-scripts:
+script:
 - echo "scripts: TRAVIS_BUILD_DIR: ${TRAVIS_BUILD_DIR}"
 - ${TRAVIS_BUILD_DIR}/build/test/test_sdptransform
 notifications:
