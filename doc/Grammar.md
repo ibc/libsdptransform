@@ -548,6 +548,32 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 * example: "25.0"
 
 
+### ts-refclk
+
+`a=ts-refclk:ptp=IEEE1588-2008:00-50-C2-FF-FE-90-04-37:0`
+
+* type: string
+* example: "ptp=IEEE1588-2008:00-1D-C1-FF-FE-12-00-A4:0"
+
+
+### mediaclk
+
+`a=mediaclk:direct=0`
+
+`a=mediaclk:sender`
+
+* type: string
+* example: "direct=0"
+
+
+### sync-time
+
+`a=sync-time:0`
+
+* type: integer
+* example: "0"
+
+
 ### invalid
 
 Unknown SDP lines are stored within the `invalid` key.
