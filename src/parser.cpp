@@ -21,9 +21,13 @@ namespace sdptransform
 
 	bool isNumber(const std::string& str);
 
+	bool isInt(const std::string& str);
+
+	bool isFloat(const std::string& str);
+
 	void trim(std::string &str);
 
-	void insertParam(json& o, const std::string& str, char type);
+	void insertParam(json& o, const std::string& str);
 
 	json parse(const std::string& sdp)
 	{
@@ -96,7 +100,7 @@ namespace sdptransform
 			if (param.length() == 0)
 				continue;
 
-			insertParam(obj, param, 's');
+			insertParam(obj, param);
 		}
 
 		return obj;
@@ -145,7 +149,7 @@ namespace sdptransform
 				if (param.length() == 0)
 					continue;
 
-				insertParam(obj, param, 'd');
+				insertParam(obj, param);
 			}
 
 			arr.push_back(obj);
@@ -252,6 +256,22 @@ namespace sdptransform
 		}
 	}
 
+	bool isInt(const std::string& str)
+	{
+		std::istringstream iss(str);
+		long l;
+		iss >> std::noskipws >> l;
+		return iss.eof() && !iss.fail();
+	}
+
+	bool isFloat(const std::string& str)
+	{
+		std::istringstream iss(str);
+		float f;
+		iss >> std::noskipws >> f;
+		return iss.eof() && !iss.fail();
+	}
+
 	json toType(const std::string& str, char type)
 	{
 		// https://stackoverflow.com/a/447307/4827838.
@@ -309,7 +329,7 @@ namespace sdptransform
 		);
 	}
 
-	void insertParam(json& o, const std::string& str, char type)
+	void insertParam(json& o, const std::string& str)
 	{
 		static const std::regex KeyValueRegex("^\\s*([^= ]+)(?:\\s*=\\s*([^ ]+))?$");
 
@@ -325,6 +345,19 @@ namespace sdptransform
 		// string.
 
 		// Insert into the given JSON object.
+		char type;
+		if(isInt(match[2].str()))
+		{
+			type = 'd';
+		}
+		else if(isFloat(match[2].str()))
+		{
+			type = 'f';
+		}
+		else
+		{
+			type = 's';
+		}
 		o[match[1].str()] = toType(match[2].str(), type);
 	}
 }
