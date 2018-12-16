@@ -32,11 +32,6 @@ namespace sdptransform
 
 	json parseParams(const std::string& str);
 
-	inline json parseFmtpConfig(const std::string& str)
-	{
-		return parseParams(str);
-	}
-
 	std::vector<int> parsePayloads(const std::string& str);
 
 	json parseImageAttributes(const std::string& str);

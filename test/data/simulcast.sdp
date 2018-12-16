@@ -20,7 +20,7 @@ a=rid:3 send pt=99
 a=rid:4 send pt=100
 a=rid:c recv pt=97
 a=imageattr:97 send [x=1280,y=720] recv [x=1280,y=720] [x=320,y=180] [x=160,y=90]
-a=imageattr:98 send [x=320,y=180]
+a=imageattr:98 send [x=320,y=180,sar=1.1,q=0.6]
 a=imageattr:99 send [x=160,y=90]
 a=imageattr:100 recv [x=1280,y=720] [x=320,y=180] send [x=1280,y=720]
 a=imageattr:* recv *

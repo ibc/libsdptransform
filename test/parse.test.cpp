@@ -71,18 +71,18 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(video.at("rtp")[0].at("rate") == 90000);
 	REQUIRE(video.at("fmtp")[0].at("payload") == 97);
 
-	auto vidFmtp = sdptransform::parseFmtpConfig(video.at("fmtp")[0].at("config"));
+	auto vidFmtp = sdptransform::parseParams(video.at("fmtp")[0].at("config"));
 
 	REQUIRE(vidFmtp.at("profile-level-id") == "4d0028");
-	REQUIRE(vidFmtp.at("packetization-mode") == "1");
+	REQUIRE(vidFmtp.at("packetization-mode") == 1);
 	REQUIRE(vidFmtp.at("sprop-parameter-sets") == "Z0IAH5WoFAFuQA==,aM48gA==");
 
 	REQUIRE(video.at("fmtp")[1].at("payload") == 98);
 
-	auto vidFmtp2 = sdptransform::parseFmtpConfig(video.at("fmtp")[1].at("config"));
+	auto vidFmtp2 = sdptransform::parseParams(video.at("fmtp")[1].at("config"));
 
-	REQUIRE(vidFmtp2.at("minptime") == "10");
-	REQUIRE(vidFmtp2.at("useinbandfec") == "1");
+	REQUIRE(vidFmtp2.at("minptime") == 10);
+	REQUIRE(vidFmtp2.at("useinbandfec") == 1);
 
 	REQUIRE(video.at("rtp")[1].at("payload") == 98);
 	REQUIRE(video.at("rtp")[1].at("codec") == "VP8");
@@ -591,10 +591,10 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid1Params ==
 		R"({
-			"pt"         : "97",
-			"max-width"  : "1280",
-			"max-height" : "720",
-			"max-fps"    : "30"
+			"pt"         : 97,
+			"max-width"  : 1280,
+			"max-height" : 720,
+			"max-fps"    : 30
 		})"_json
 	);
 
@@ -604,7 +604,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid2Params ==
 		R"({
-			"pt" : "98"
+			"pt" : 98
 		})"_json
 	);
 
@@ -614,7 +614,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid3Params ==
 		R"({
-			"pt" : "99"
+			"pt" : 99
 		})"_json
 	);
 
@@ -624,7 +624,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid4Params ==
 		R"({
-			"pt" : "100"
+			"pt" : 100
 		})"_json
 	);
 
@@ -634,7 +634,7 @@ SCENARIO("simulcastSdp", "[parse]")
 	REQUIRE(
 		rid5Params ==
 		R"({
-			"pt" : "97"
+			"pt" : 97
 		})"_json
 	);
 
@@ -659,7 +659,7 @@ SCENARIO("simulcastSdp", "[parse]")
 		R"({
 			"pt"     : "98",
 			"dir1"   : "send",
-			"attrs1" : "[x=320,y=180]"
+			"attrs1" : "[x=320,y=180,sar=1.1,q=0.6]"
 		})"_json
 	);
 
@@ -703,8 +703,10 @@ SCENARIO("simulcastSdp", "[parse]")
 		imageattr2SendParams ==
 		R"([
 			{
-				"x" : 320,
-				"y" : 180
+				"x"   : 320,
+				"y"   : 180,
+				"sar" : 1.1,
+				"q"   : 0.6
 			}
 		])"_json
 	);
@@ -866,11 +868,11 @@ SCENARIO("st2110-20Sdp", "[parse]")
 		fmtp0Params ==
 		R"({
 			"sampling"       : "YCbCr-4:2:2",
-			"width"          : "1280",
-			"height"         : "720",
+			"width"          : 1280,
+			"height"         : 720,
 			"interlace"      : "",
 			"exactframerate" : "60000/1001",
-			"depth"          : "10",
+			"depth"          : 10,
 			"TCS"            : "SDR",
 			"colorimetry"    : "BT709",
 			"PM"             : "2110GPM",

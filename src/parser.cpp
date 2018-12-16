@@ -2,6 +2,7 @@
 #include <cstddef>   // size_t
 #include <memory>    // std::addressof()
 #include <sstream>   // std::stringstream, std::istringstream
+#include <ios>       // std::noskipws
 #include <algorithm> // std::find_if()
 #include <cctype>    // std::isspace()
 
@@ -25,7 +26,7 @@ namespace sdptransform
 
 	bool isFloat(const std::string& str);
 
-	void trim(std::string &str);
+	void trim(std::string& str);
 
 	void insertParam(json& o, const std::string& str);
 
@@ -260,7 +261,9 @@ namespace sdptransform
 	{
 		std::istringstream iss(str);
 		long l;
+
 		iss >> std::noskipws >> l;
+
 		return iss.eof() && !iss.fail();
 	}
 
@@ -268,7 +271,9 @@ namespace sdptransform
 	{
 		std::istringstream iss(str);
 		float f;
+
 		iss >> std::noskipws >> f;
+
 		return iss.eof() && !iss.fail();
 	}
 
@@ -313,7 +318,7 @@ namespace sdptransform
 		return nullptr;
 	}
 
-	void trim(std::string &str)
+	void trim(std::string& str)
 	{
 		str.erase(
 			str.begin(),
@@ -344,20 +349,16 @@ namespace sdptransform
 		// value. We may insert nullptr then, but it's easier to just set an empty
 		// string.
 
-		// Insert into the given JSON object.
 		char type;
-		if(isInt(match[2].str()))
-		{
+
+		if (isInt(match[2].str()))
 			type = 'd';
-		}
-		else if(isFloat(match[2].str()))
-		{
+		else if (isFloat(match[2].str()))
 			type = 'f';
-		}
 		else
-		{
 			type = 's';
-		}
+
+		// Insert into the given JSON object.
 		o[match[1].str()] = toType(match[2].str(), type);
 	}
 }

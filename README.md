@@ -46,9 +46,33 @@ if (session.find("name") != session.end())
 }
 ```
 
-* Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object with value `nullptr` (if it did not exist before).
+* Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object with value `nullptr` if it did not exist before.
 
-It's **strongly** recommended to read the [JSON documentation](https://github.com/nlohmann/json/).
+* So, when using `parseParams()` or `parseImageAttributes()` exposed API, the application should do some checks before reading a value of a supposed type. So, for instance, let's assume that the first `a=fmtp` line in a `video` media section is `a=fmtp:97 profile-level-id=4d0028;packetization-mode=1`. The safe way to read its values is:
+
+```c++
+auto h264Fmtp = sdptransform::parseParams(video.at("fmtp")[0].at("config"));
+std::string profileLevelId;
+int packetizationMode;
+
+if (
+  h264Fmtp.find("profile-level-id") != h264Fmtp.end() &&
+  h264Fmtp["profile-level-id"].is_string()
+)
+{
+  profileLevelId = h264Fmtp.at("profile-level-id");
+}
+
+if (
+  h264Fmtp.find("packetization-mode") != h264Fmtp.end() &&
+  h264Fmtp["packetization-mode"].is_number_integer()
+)
+{
+  packetizationMode = h264Fmtp.at("packetization-mode");
+}
+```
+
+It's **strongly** recommended to read the [JSON documentation](https://github.com/nlohmann/json/) and, before reading a parsed SDP, checking whether such a field exists and it has the desired type (string, integer, float).
 
 
 ## Usage - Parser
@@ -56,7 +80,9 @@ It's **strongly** recommended to read the [JSON documentation](https://github.co
 
 ### parse()
 
-Syntax: `json parse(const std::string& sdp)`
+```c++
+json parse(const std::string& sdp)
+```
 
 Parses an unprocessed SDP string and returns a JSON object. SDP lines can be terminated on `\r\n` (as per specification) or just `\n`.
 
@@ -254,20 +280,24 @@ Resulting `session` is a JSON object as follows:
 ```
 
 
-### Parser Postprocessing
+### Parser postprocessing
 
 No excess parsing is done to the raw strings because the writer is built to be the inverse of the parser. That said, a few helpers have been built in:
 
 
 #### parseParams()
 
-Syntax: `json parseParams(const std::string& str)`
+```c++
+json parseParams(const std::string& str)
+```
 
 Parses `fmtp.at("config")` and others such as `rid.at("params")` and returns an object with all the params in a key/value fashion.
 
-NOTE: All the values are expressed as strings.
+NOTE: The type of each value is auto-detected, so it can be a string, integer or float. Do **NOT** assume the type of a value! (read the **This is not JavaScript!** section above).
 
 ```c++
+// a=fmtp:97 profile-level-id=4d0028;packetization-mode=1
+
 json params =
   sdptransform::parseParams(session.at("media")[1].at("fmtp")[0].at("config"));
 ```
@@ -276,7 +306,7 @@ Resulting `params` is a JSON object as follows:
 
 ```json
 {
-  "packetization-mode": "1",
+  "packetization-mode": 1,
   "profile-level-id": "4d0028"
 }
 ```
@@ -284,11 +314,15 @@ Resulting `params` is a JSON object as follows:
 
 #### parsePayloads()
 
-Syntax: `std::vector<int> parsePayloads(const std::string& str)`
+```c++
+std::vector<int> parsePayloads(const std::string& str)
+```
 
 Returns a vector with all the payload advertised in the corresponding m-line.
 
 ```c++
+// m=video 55400 RTP/SAVPF 97 98
+
 json payloads =
   sdptransform::parsePayloads(session.at("media")[1].at("payloads"));
 ```
@@ -302,9 +336,13 @@ Resulting `payloads` is a C++ vector of `int` elements as follows:
 
 #### parseImageAttributes()
 
-Syntax: `json parseImageAttributes(const std::string& str)`
+```c++
+json parseImageAttributes(const std::string& str)
+```
 
 Parses [Generic Image Attributes](https://tools.ietf.org/html/rfc6236). Must be provided with the `attrs1` or `attrs2` string of a `a=imageattr` line. Returns an array of key/value objects.
+
+NOTE: The type of each value is auto-detected, so it can be a string, integer or float. Do **NOT** assume the type of a value! (read the **This is not JavaScript!** section above).
 
 ```c++
 // a=imageattr:97 send [x=1280,y=720] recv [x=1280,y=720] [x=320,y=180]
@@ -326,7 +364,9 @@ Resulting `imageAttributes` is a JSON array as follows:
 
 #### parseSimulcastStreamList()
 
-Syntax: `json parseSimulcastStreamList(const std::string& str)`
+```c++
+json parseSimulcastStreamList(const std::string& str)
+```
 
 Parses [simulcast](https://tools.ietf.org/html/draft-ietf-mmusic-sdp-simulcast) streams/formats. Must be provided with the `attrs1` or `attrs2` string of the `a=simulcast` line.
 
@@ -359,7 +399,9 @@ Resulting `simulcastAttributes` is a JSON array as follows:
 
 ### write()
 
-Syntax: `std::string write(json& session)`
+```c++
+std::string write(json& session)
+```
 
 The writer is the inverse of the parser, and will need a struct equivalent to the one returned by it.
 
@@ -441,7 +483,7 @@ $ ./scripts/run-test.sh
 
 Iñaki Baz Castillo [[website](https://inakibaz.me)|[github](https://github.com/ibc/)]
 
-Special thanks to [Eirik Albrigtsen](https://github.com/clux), the author of the [sdp-transform](https://github.com/clux/sdp-transform/).
+Special thanks to [Eirik Albrigtsen](https://github.com/clux), the author of the [sdp-transform](https://github.com/clux/sdp-transform/) JavaScript library.
 
 
 ## License
