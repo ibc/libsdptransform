@@ -495,5 +495,5 @@ Special thanks to [Eirik Albrigtsen](https://github.com/clux), the author of the
 
 
 
-[travis-ci-shield-libsdptransform]: https://img.shields.io/travis/ibc/libsdptransform/master.svg
-[travis-ci-libsdptransform]: http://travis-ci.org/ibc/libsdptransform
+[travis-ci-shield-libsdptransform]: https://travis-ci.com/ibc/libsdptransform.svg?branch=master
+[travis-ci-libsdptransform]: https://travis-ci.com/ibc/libsdptransform
