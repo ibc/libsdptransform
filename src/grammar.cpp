@@ -1022,22 +1022,6 @@ namespace sdptransform
 						"mediaclk:%s"
 					},
 
-					// a=sync-time:0
-					{
-						// name:
-						"syncTime",
-						// push:
-						"",
-						// reg:
-						std::regex("sync-time:(\\d+)$"),
-						// names:
-						{ },
-						// types:
-						{ 'd' },
-						// format:
-						"sync-time:%d"
-					},
-
 					// Any a= that we don't understand is kepts verbatim on media.invalid.
 					{
 						// name:

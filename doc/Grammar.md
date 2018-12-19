@@ -565,14 +565,6 @@ Old simulcast draft [revision 03](https://tools.ietf.org/html/draft-ietf-mmusic-
 * example: "direct=0"
 
 
-### syncTime
-
-`a=sync-time:0`
-
-* type: integer
-* example: 0
-
-
 ### invalid
 
 Unknown SDP lines are stored within the `invalid` key.
