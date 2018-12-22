@@ -46,13 +46,13 @@ function get_dep()
 function get_json()
 {
 	GIT_REPO="https://github.com/nlohmann/json.git"
-	GIT_TAG="v3.4.0"
+	GIT_TAG="v3.5.0"
 	DEST="deps/json"
 
 	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
 
 	echo ">>> [INFO] copying json.hpp to include/ directory ..."
-	cp ${DEST}/src/json.hpp include/
+	cp ${DEST}/single_include/nlohmann/json.hpp include/
 }
 
 function get_catch()
