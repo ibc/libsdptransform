@@ -48,6 +48,22 @@ if (session.find("name") != session.end())
 }
 ```
 
+* And a more efficient way is:
+
+```c++
+std::string sdpName;
+auto it = session.find("name");
+
+if (it != session.end())
+{
+  // NOTE: The API guarantees that the SDP name is a string (otherwise this
+  // would crash).
+  sdpName = it->get<std::string>();
+  // or just:
+  sdpName = *it;
+}
+```
+
 * Also, as in C++ maps, using the `[]` operator on a JSON object for reading the value of a given `key` will insert such a `key` in the `json` object with value `nullptr` if it did not exist before.
 
 * So, when using `parseParams()` or `parseImageAttributes()` exposed API, the application should do some checks before reading a value of a supposed type. So, for instance, let's assume that the first `a=fmtp` line in a `video` media section is `a=fmtp:97 profile-level-id=4d0028;packetization-mode=1`. The safe way to read its values is:
@@ -74,7 +90,35 @@ if (
 }
 ```
 
-It's **strongly** recommended to read the [JSON documentation](https://github.com/nlohmann/json/) and, before reading a parsed SDP, checking whether such a field exists and it has the desired type (string, integer, float).
+* And much more efficient:
+
+```c++
+auto h264Fmtp = sdptransform::parseParams(video.at("fmtp")[0].at("config"));
+std::string profileLevelId;
+int packetizationMode;
+
+auto profileLevelIdIterator = h264Fmtp.find("profile-level-id");
+
+if (
+  profileLevelIdIterator != h264Fmtp.end() &&
+  profileLevelIdIterator->is_string()
+)
+{
+  profileLevelId = *profileLevelIdIterator;
+}
+
+auto packetizationModeIterator = h264Fmtp.find("packetization-mode");
+
+if (
+  packetizationModeIterator != h264Fmtp.end() &&
+  packetizationModeIterator->is_number_integer()
+)
+{
+  packetizationMode = *packetizationModeIterator;
+}
+```
+
+It's **strongly** recommended to read the [JSON documentation](https://github.com/nlohmann/json/) and, before reading a parsed SDP, check whether the desired field exists and it has the desired type (string, integer, float, etc).
 
 
 ## Usage - Parser

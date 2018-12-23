@@ -19,6 +19,20 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(session.at("origin").at("ipVer") == 4);
 	REQUIRE(session.at("origin").at("address") == "203.0.113.1");
 
+	// Testing json efficient access.
+	auto originIterator = session.find("origin");
+	auto addressIterator = originIterator->find("address");
+	auto sessionIdIterator = originIterator->find("sessionId");
+
+	REQUIRE(addressIterator != originIterator->end());
+	REQUIRE(*addressIterator == "203.0.113.1");
+	REQUIRE(addressIterator->get<std::string>() == "203.0.113.1");
+	REQUIRE(sessionIdIterator != originIterator->end());
+	REQUIRE(*sessionIdIterator == 20518);
+	REQUIRE(sessionIdIterator->get<int>() == 20518);
+	REQUIRE(sessionIdIterator->get<uint16_t>() == 20518);
+	REQUIRE(sessionIdIterator->get<int32_t>() == 20518);
+
 	REQUIRE(session.at("connection").at("ip") == "203.0.113.1");
 	REQUIRE(session.at("connection").at("version") == 4);
 
@@ -76,6 +90,13 @@ SCENARIO("normalSdp", "[parse]")
 	REQUIRE(vidFmtp.at("profile-level-id") == "4d0028");
 	REQUIRE(vidFmtp.at("packetization-mode") == 1);
 	REQUIRE(vidFmtp.at("sprop-parameter-sets") == "Z0IAH5WoFAFuQA==,aM48gA==");
+
+	// Testing json efficient access.
+	auto profileLevelIdIterator = vidFmtp.find("profile-level-id");
+
+	REQUIRE(profileLevelIdIterator != vidFmtp.end());
+	REQUIRE(*profileLevelIdIterator == "4d0028");
+	REQUIRE(profileLevelIdIterator->get<std::string>() == "4d0028");
 
 	REQUIRE(video.at("fmtp")[1].at("payload") == 98);
 
