@@ -521,7 +521,7 @@ $ cmake . -Bbuild
 * Run test units:
 
 ```bash
-$ ./scripts/run-test.sh
+$ ./scripts/test.sh
 ```
 
 
