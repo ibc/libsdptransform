@@ -83,7 +83,7 @@ if (
 
 if (
   h264Fmtp.find("packetization-mode") != h264Fmtp.end() &&
-  h264Fmtp["packetization-mode"].is_number_integer()
+  h264Fmtp["packetization-mode"].is_number_unsigned()
 )
 {
   packetizationMode = h264Fmtp.at("packetization-mode");
@@ -111,7 +111,7 @@ auto packetizationModeIterator = h264Fmtp.find("packetization-mode");
 
 if (
   packetizationModeIterator != h264Fmtp.end() &&
-  packetizationModeIterator->is_number_integer()
+  packetizationModeIterator->is_number_unsigned()
 )
 {
   packetizationMode = *packetizationModeIterator;
