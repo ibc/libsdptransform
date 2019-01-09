@@ -268,13 +268,20 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^(\\w*) (\\d*) ([\\w\\/]*)(?: (.*))?"),
+						std::regex("^(\\w*) (\\d*)(?:/(\\d*))? ([\\w\\/]*)(?: (.*))?"),
 						// names:
-						{ "type", "port", "protocol", "payloads" },
+						{ "type", "port", "numPorts", "protocol", "payloads" },
 						// types:
-						{ 's', 'd', 's', 's' },
+						{ 's', 'd', 'd', 's', 's' },
 						// format:
-						"%s %d %s %s"
+						"",
+						// formatFunc:
+						[](const json& o)
+						{
+							return hasValue(o, "numPorts")
+								? "%s %d/%d %s %s"
+								: "%s %d%v %s %s";
+						}
 					}
 				}
 			},
@@ -1043,16 +1050,16 @@ namespace sdptransform
 
 		bool hasValue(const json& o, const std::string& key)
 		{
-			if (o.find(key) == o.end())
+			auto it = o.find(key);
+
+			if (it == o.end())
 				return false;
 
-			if (o.at(key).is_string())
+			if (it->is_string())
 			{
-				std::string str = o.at(key);
-
-				return !str.empty();
+				return !it->get<std::string>().empty();
 			}
-			else if (o.at(key).is_number())
+			else if (it->is_number())
 			{
 				return true;
 			}

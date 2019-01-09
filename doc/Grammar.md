@@ -125,6 +125,8 @@ if (
 
 `m=video 51744 RTP/AVP 126 97 98 34 31`
 
+`m=audio 5004/2 RTP/AVP 96`
+
 * multiple
 * type: object
 
@@ -132,8 +134,11 @@ if (
 | --------------- | ------- | -------------------------
 | type            | string  | "video"
 | port            | integer | 51744
+| numPorts        | integer | 2 (optional)
 | protocol        | string  | "RTP/AVP"
 | payloads        | string  | "126 97 98 34 31"
+
+*NOTE:* `numPorts` is just present in the object if `port` is followed by `/` plus a number. More info in the [RFC 4566 section 5.14](https://tools.ietf.org/html/rfc4566#section-5.14).
 
 
 ### rtp

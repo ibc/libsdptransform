@@ -917,6 +917,8 @@ SCENARIO("aes67", "[parse]")
 	REQUIRE(audioPayloads == R"([ 96 ])"_json);
 
 	REQUIRE(audio.at("type") == "audio");
+	REQUIRE(audio.at("port") == 5004);
+	REQUIRE(audio.at("numPorts") == 2);
 	REQUIRE(audio.at("protocol") == "RTP/AVP");
 	REQUIRE(audio.at("rtp")[0].at("payload") == 96);
 	REQUIRE(audio.at("rtp")[0].at("codec") == "L24");

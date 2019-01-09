@@ -47,18 +47,20 @@ namespace sdptransform
 		{
 			for (auto& rule : grammar::rulesMap.at(type))
 			{
+				json::const_iterator it;
+
 				if (
 					!rule.name.empty() &&
-					session.find(rule.name) != session.end() &&
-					!session[rule.name].is_null()
+					(it = session.find(rule.name)) != session.end() &&
+					!it->is_null()
 				)
 				{
 					makeLine(sdpstream, type, rule, session);
 				}
 				else if (
 					!rule.push.empty() &&
-					session.find(rule.push) != session.end() &&
-					session[rule.push].is_array()
+					(it = session.find(rule.push)) != session.end() &&
+					it->is_array()
 				)
 				{
 					for (auto& el : session.at(rule.push))
@@ -78,18 +80,20 @@ namespace sdptransform
 			{
 				for (auto& rule : grammar::rulesMap.at(type))
 				{
+					json::const_iterator it;
+
 					if (
 						!rule.name.empty() &&
-						mLine.find(rule.name) != mLine.end() &&
-						!mLine[rule.name].is_null()
+						(it = mLine.find(rule.name)) != mLine.end() &&
+						!it->is_null()
 					)
 					{
 						makeLine(sdpstream, type, rule, mLine);
 					}
 					else if (
 						!rule.push.empty() &&
-						mLine.find(rule.push) != mLine.end() &&
-						mLine[rule.push].is_array()
+						(it = mLine.find(rule.push)) != mLine.end() &&
+						it->is_array()
 					)
 					{
 						for (auto& el : mLine.at(rule.push))
@@ -114,19 +118,27 @@ namespace sdptransform
 		static const std::regex FormatRegex("%[sdv%]");
 
 		const std::string format = rule.format.empty()
-			? (rule.formatFunc(!rule.push.empty() ? location : location.at(rule.name)))
+			? rule.formatFunc(
+					!rule.push.empty()
+						? location
+						: !rule.name.empty()
+							? location.at(rule.name)
+							: location)
 			: rule.format;
 
 		std::vector<json> args;
+		auto it = location.find(rule.name);
 
 		if (!rule.names.empty())
 		{
 			for (auto& name : rule.names)
 			{
+				json::const_iterator it;
+
 				if (
 					!rule.name.empty() &&
-					location.find(rule.name) != location.end() &&
-					location.at(rule.name).find(name) != location.at(rule.name).end()
+					(it = location.find(rule.name)) != location.end() &&
+					it->find(name) != it->end()
 				)
 				{
 					args.push_back(location.at(rule.name).at(name));
@@ -143,9 +155,9 @@ namespace sdptransform
 				}
 			}
 		}
-		else if (location.find(rule.name) != location.end())
+		else if (it != location.end())
 		{
-			args.push_back(location.at(rule.name));
+			args.push_back(*it);
 		}
 
 		std::stringstream linestream;

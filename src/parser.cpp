@@ -66,12 +66,16 @@ namespace sdptransform
 				location = std::addressof(media[media.size() - 1]);
 			}
 
-			if (grammar::rulesMap.find(type) == grammar::rulesMap.end())
+			auto it = grammar::rulesMap.find(type);
+
+			if (it == grammar::rulesMap.end())
 				continue;
 
-			for (int j = 0; j < grammar::rulesMap.at(type).size(); ++j)
+			auto& rules = it->second;
+
+			for (size_t j = 0; j < rules.size(); ++j)
 			{
-				auto& rule = grammar::rulesMap.at(type)[j];
+				auto& rule = rules[j];
 
 				if (std::regex_search(content, rule.reg))
 				{
