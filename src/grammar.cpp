@@ -226,13 +226,20 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^IN IP(\\d) (\\S*)"),
+						std::regex("^IN IP(\\d) ([^\\\\S/]*)(?:/(\\d*))?"),
 						// names:
-						{ "version", "ip" },
+						{ "version", "ip" , "ttl"},
 						// types:
-						{ 'd', 's' },
+						{ 'd', 's', 'd'},
 						// format:
-						"IN IP%d %s"
+						"",
+						// formatFunc:
+						[](const json& o)
+						{
+							return hasValue(o, "ttl")
+								? "IN IP%d %s/%d"
+								: "IN IP%d %s";
+						}
 					}
 				}
 			},
