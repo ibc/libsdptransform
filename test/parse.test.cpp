@@ -931,3 +931,41 @@ SCENARIO("aes67", "[parse]")
 
 	REQUIRE(newSdp == sdp);
 }
+
+SCENARIO("multicastttlSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/multicastttl.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+
+	REQUIRE(session.at("origin").at("sessionId") == 1558439701980808);
+	REQUIRE(session.at("origin").at("sessionVersion") == 1);
+	REQUIRE(session.at("origin").at("netType") == "IN");
+	REQUIRE(session.at("origin").at("ipVer") == 4);
+	REQUIRE(session.at("origin").at("address") == "192.168.1.189");
+
+	REQUIRE(session.at("connection").at("ip") == "224.2.36.42");
+	REQUIRE(session.at("connection").at("version") == 4);
+	REQUIRE(session.at("connection").at("ttl") == 15);
+
+
+	auto& video = media[0];
+	auto videoPayloads = sdptransform::parsePayloads(video.at("payloads"));
+
+	REQUIRE(video.at("type") == "video");
+	REQUIRE(video.at("port") == 6970);
+	REQUIRE(video.at("protocol") == "RTP/AVP");
+	REQUIRE(video.at("rtp")[0].at("payload") == 96);
+	REQUIRE(video.at("rtp")[0].at("codec") == "H264");
+	REQUIRE(video.at("rtp")[0].at("rate") == 90000);
+	REQUIRE(video.at("fmtp")[0].at("payload") == 96);
+
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}
