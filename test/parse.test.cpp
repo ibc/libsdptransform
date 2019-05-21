@@ -952,7 +952,6 @@ SCENARIO("multicastttlSdp", "[parse]")
 	REQUIRE(session.at("connection").at("version") == 4);
 	REQUIRE(session.at("connection").at("ttl") == 15);
 
-
 	auto& video = media[0];
 	auto videoPayloads = sdptransform::parsePayloads(video.at("payloads"));
 
@@ -963,7 +962,6 @@ SCENARIO("multicastttlSdp", "[parse]")
 	REQUIRE(video.at("rtp")[0].at("codec") == "H264");
 	REQUIRE(video.at("rtp")[0].at("rate") == 90000);
 	REQUIRE(video.at("fmtp")[0].at("payload") == 96);
-
 
 	auto newSdp = sdptransform::write(session);
 
