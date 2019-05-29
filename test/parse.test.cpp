@@ -967,3 +967,64 @@ SCENARIO("multicastttlSdp", "[parse]")
 
 	REQUIRE(newSdp == sdp);
 }
+
+SCENARIO("extmapEncryptSdp", "[parse]")
+{
+	auto sdp = helpers::readFile("test/data/extmap-encrypt.sdp");
+	auto session = sdptransform::parse(sdp);
+
+	REQUIRE(session.size() > 0);
+	REQUIRE(session.find("media") != session.end());
+
+	auto& media = session.at("media");
+	auto& audio = media[0];
+	auto audioPayloads = sdptransform::parsePayloads(audio.at("payloads"));
+
+	REQUIRE(audioPayloads == R"([ 96 ])"_json);
+
+	REQUIRE(audio.at("type") == "audio");
+	REQUIRE(audio.at("port") == 54400);
+	REQUIRE(audio.at("protocol") == "RTP/SAVPF");
+	REQUIRE(audio.at("rtp")[0].at("payload") == 96);
+	REQUIRE(audio.at("rtp")[0].at("codec") == "opus");
+	REQUIRE(audio.at("rtp")[0].at("rate") == 48000);
+	REQUIRE(
+		audio.at("ext")[0] ==
+		R"({
+			"value"     : 1,
+			"direction" : "sendonly",
+			"uri"       : "URI-toffset"
+		})"_json
+	);
+	REQUIRE(
+		audio.at("ext")[1] ==
+		R"({
+			"value" : 2,
+			"uri"   : "urn:ietf:params:rtp-hdrext:toffset"
+		})"_json
+	);
+	REQUIRE(
+		audio.at("ext")[2] ==
+		R"({
+			"value"       : 3,
+			"encrypt-uri" : "urn:ietf:params:rtp-hdrext:encrypt",
+			"uri"         : "urn:ietf:params:rtp-hdrext:smpte-tc",
+			"config"      : "25@600/24"
+		})"_json
+	);
+	REQUIRE(
+		audio.at("ext")[3] ==
+		R"({
+			"value"       : 4,
+			"direction"   : "recvonly",
+			"encrypt-uri" : "urn:ietf:params:rtp-hdrext:encrypt",
+			"uri"         : "URI-gps-string"
+		})"_json
+	);
+
+	REQUIRE(media.size() == 1);
+
+	auto newSdp = sdptransform::write(session);
+
+	REQUIRE(newSdp == sdp);
+}

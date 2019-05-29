@@ -418,17 +418,18 @@ namespace sdptransform
 
 					// a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
 					// a=extmap:1/recvonly URI-gps-string
+					// a=extmap:3 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:smpte-tc 25@600/24
 					{
 						// name:
 						"",
 						// push:
 						"ext",
 						// reg:
-						std::regex("^extmap:(\\d+)(?:\\/(\\w+))? (\\S*)(?: (\\S*))?"),
+						std::regex("^extmap:(\\d+)(?:\\/(\\w+))?(?: (urn:ietf:params:rtp-hdrext:encrypt))? (\\S*)(?: (\\S*))?"),
 						// names:
-						{ "value", "direction", "uri", "config" },
+						{ "value", "direction", "encrypt-uri", "uri", "config" },
 						// types:
-						{ 'd', 's', 's', 's' },
+						{ 'd', 's', 's', 's', 's' },
 						// format:
 						"",
 						// formatFunc:
@@ -436,6 +437,7 @@ namespace sdptransform
 						{
 							return std::string("extmap:%d") +
 								(hasValue(o, "direction") ? "/%s" : "%v") +
+								(hasValue(o, "encrypt-uri") ? " %s" : "%v") +
 								" %s" +
 								(hasValue(o, "config") ? " %s" : "");
 						}

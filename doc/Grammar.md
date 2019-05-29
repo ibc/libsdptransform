@@ -230,6 +230,8 @@ if (
 
 `a=extmap:2 urn:ietf:params:rtp-hdrext:toffset`
 
+`a=extmap:3 urn:ietf:params:rtp-hdrext:encrypt urn:ietf:params:rtp-hdrext:smpte-tc 25@600/24`
+
 * multiple
 * type: object
 
@@ -238,6 +240,7 @@ if (
 | value           | integer | 1
 | direction       | string  | "recvonly"
 | uri             | string  | "URI-gps-string"
+| encrypt-uri     | string  | "urn:ietf:params:rtp-hdrext:encrypt"
 | config          | string  |
 
 
