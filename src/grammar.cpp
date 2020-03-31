@@ -537,13 +537,13 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^ptime:(\\d*)"),
+						std::regex("^ptime:(\\d+(?:$|\\.\\d+))"),
 						// names:
 						{ },
 						// types:
-						{ 'd' },
+						{ 'f' },
 						// format:
-						"ptime:%d"
+						"ptime:%s"
 					},
 
 					// a=maxptime:60
