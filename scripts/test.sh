@@ -17,7 +17,7 @@ if [ "$1" == "rebuild" ]; then
 	echo "[INFO] rebuilding CMake project: cmake . -Bbuild [...]"
 
 	rm -rf build/ bin/
-	cmake . -Bbuild
+	cmake . -Bbuild -DSDPTRANSFORM_BUILD_TESTS=ON
 
 	# Remove the 'rebuild' argument.
 	shift

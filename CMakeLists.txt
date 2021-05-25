@@ -9,7 +9,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # For CMake < 3.1.
 add_compile_options(-std=c++11)
 
-subdirs(test readme-helper)
+option(SDPTRANSFORM_BUILD_TESTS "Build unit tests" OFF)
+
+message("\n=========== libsdptransform Build Configuration ===========\n")
+message(STATUS "SDPTRANSFORM_BUILD_TESTS : " ${SDPTRANSFORM_BUILD_TESTS})
+message("")
+
+if (${SDPTRANSFORM_BUILD_TESTS})
+	add_subdirectory(test)
+endif()
+
+add_subdirectory(readme-helper)
 
 include_directories(${sdptransform_SOURCE_DIR}/include)
 
