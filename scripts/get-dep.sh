@@ -57,8 +57,8 @@ function get_json()
 
 function get_catch()
 {
-	GIT_REPO="https://github.com/philsquared/Catch.git"
-	GIT_TAG="v2.11.0"
+	GIT_REPO="https://github.com/catchorg/Catch2.git"
+	GIT_TAG="v2.13.9"
 	DEST="deps/catch"
 
 	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
