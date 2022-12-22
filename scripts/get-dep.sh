@@ -34,10 +34,6 @@ function get_dep()
 	git checkout --quiet ${GIT_TAG}
 	set -e
 
-	echo ">>> [INFO] adding dep source code to the repository ..."
-	rm -rf .git
-	git add .
-
 	echo ">>> [INFO] got dep '${DEP}'"
 
 	cd ${PROJECT_PWD}
@@ -46,7 +42,7 @@ function get_dep()
 function get_json()
 {
 	GIT_REPO="https://github.com/nlohmann/json.git"
-	GIT_TAG="v3.7.3"
+	GIT_TAG="v3.11.2"
 	DEST="deps/json"
 
 	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
@@ -58,13 +54,20 @@ function get_json()
 function get_catch()
 {
 	GIT_REPO="https://github.com/catchorg/Catch2.git"
-	GIT_TAG="v2.13.9"
+	GIT_TAG="v3.2.1"
 	DEST="deps/catch"
 
 	get_dep "${GIT_REPO}" "${GIT_TAG}" "${DEST}"
 
+	# Catch2 v3 is no longer a single header library and we should build it as a
+	# proper (static) library. May do it in the future.
+	# Doc: https://github.com/catchorg/Catch2/blob/devel/docs/migrate-v2-to-v3.md#migrating-from-v2-to-v3
+
 	echo ">>> [INFO] copying include file to test/include/ directory ..."
-	cp ${DEST}/single_include/catch2/catch.hpp test/include/
+	cp ${DEST}/extras/catch_amalgamated.hpp test/include/
+
+	echo ">>> [INFO] copying source file to test/ directory ..."
+	cp ${DEST}/extras/catch_amalgamated.cpp test/
 }
 
 case "${DEP}" in
