@@ -27,6 +27,7 @@ set(
 )
 
 add_library(sdptransform STATIC ${SOURCE_FILES} ${HEADER_FILES})
+target_include_directories(sdptransform PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 install(TARGETS sdptransform DESTINATION lib)
 install(FILES ${HEADER_FILES} DESTINATION include/sdptransform)
