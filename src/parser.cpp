@@ -34,8 +34,6 @@ namespace sdptransform
 
 	json parse(const std::string& sdp)
 	{
-		static const std::regex ValidLineRegex("^([a-z])=(.*)");
-
 		json session = json::object();
 		std::stringstream sdpstream(sdp);
 		std::string line;
@@ -49,7 +47,8 @@ namespace sdptransform
 				line.pop_back();
 
 			// Ensure it's a valid SDP line.
-			if (!std::regex_search(line, ValidLineRegex))
+			// we match ^[a-z]=
+			if (line.size()<2 || line[0]<'a' || line[0] > 'z' || line[1]!='=')
 				continue;
 
 			char type = line[0];
