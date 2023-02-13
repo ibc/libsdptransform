@@ -18,12 +18,16 @@ set(
 	src/grammar.cpp
 	src/parser.cpp
 	src/writer.cpp
+	src/matcher.cpp
 )
 
 set(
 	HEADER_FILES
 	include/sdptransform.hpp
 	include/json.hpp
+	include/string_view.hpp
+	include/string_view_lite.hpp
+	include/matcher.hpp
 )
 
 add_library(sdptransform STATIC ${SOURCE_FILES} ${HEADER_FILES})

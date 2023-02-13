@@ -2,6 +2,7 @@
 #include <cstddef>   // size_t
 #include <sstream>   // std::stringstream
 #include <stdexcept>
+#include "string_view.hpp"
 
 namespace sdptransform
 {
@@ -115,8 +116,6 @@ namespace sdptransform
 		const json& location
 	)
 	{
-		static const std::regex FormatRegex("%[sdv%]");
-
 		const std::string format = rule.format.empty()
 			? rule.formatFunc(
 					!rule.push.empty()
@@ -166,42 +165,54 @@ namespace sdptransform
 
 		linestream << type << "=";
 
-		for(
-			auto it = std::sregex_iterator(format.begin(), format.end(), FormatRegex);
-			it != std::sregex_iterator();
-		  ++it
-		 )
+		string_view runningFormat(format);
+		size_t nextPos = 0U;
+		for (
+			auto pos = runningFormat.find('%'); pos != std::string::npos; pos = runningFormat.find('%', nextPos))
 		{
-			const std::smatch& match = *it;
-			const std::string& str = match.str();
+			const char nextChar = (pos + 1 < runningFormat.size()) ? runningFormat[pos + 1] : '0';
+			const string_view prefix = runningFormat.substr(0, pos);
+
+			if (nextChar != '%' && nextChar != 'v' && nextChar != 'd' && nextChar != 's')
+			{
+				nextPos = pos + 2;
+				continue;
+			}
 
 			if (i >= len)
 			{
-				linestream << str;
+				linestream << prefix << '%' << nextChar;
 			}
 			else
 			{
-				auto& arg = args[i];
+				auto &arg = args[i];
 				i++;
 
-				linestream << match.prefix();
+				linestream << prefix;
 
-				if (str == "%%")
+				if (nextChar == '%')
 				{
 					linestream << "%";
 				}
-				else if (str == "%s" || str == "%d")
+				else if (nextChar == 's' || nextChar == 'd')
 				{
 					if (arg.is_string())
 						linestream << arg.get<std::string>();
 					else
 						linestream << arg;
 				}
-				else if (str == "%v")
+				else if (nextChar == 'v')
 				{
 					// Do nothing.
 				}
 			}
+
+			runningFormat = runningFormat.substr(pos + 2);
+			nextPos = 0;
+		}
+		if (!runningFormat.empty())
+		{
+			linestream << runningFormat;
 		}
 
 		linestream << "\r\n";
