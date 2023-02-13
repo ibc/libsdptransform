@@ -13,7 +13,7 @@ namespace sdptransform
 	void parseReg(const grammar::Rule& rule, json& location, const std::string& content);
 
 	void attachProperties(
-		const std::smatch& match,
+		const matcher::Interface::Results& match,
 		json& location,
 		const std::vector<std::string>& names,
 		const std::string& rawName,
@@ -78,7 +78,7 @@ namespace sdptransform
 			{
 				auto& rule = rules[j];
 
-				if (std::regex_search(content, rule.reg))
+				if (rule.reg->doMatch(content))
 				{
 					parseReg(rule, *location, content);
 
@@ -219,9 +219,7 @@ namespace sdptransform
 			location[rule.name] = json::object();
 		}
 
-		std::smatch match;
-
-		std::regex_search(content, match, rule.reg);
+		auto match = rule.reg->getMatches(content);
 
 		json object = json::object();
 		json& keyLocation = !rule.push.empty()
@@ -239,7 +237,7 @@ namespace sdptransform
 	}
 
 	void attachProperties(
-		const std::smatch& match,
+		const matcher::Interface::Results& match,
 		json& location,
 		const std::vector<std::string>& names,
 		const std::string& rawName,
@@ -248,15 +246,17 @@ namespace sdptransform
 	{
 		if (!rawName.empty() && names.empty())
 		{
-			location[rawName] = toType(match[1].str(), types[0]);
+			const auto& sv = match[0];
+			location[rawName] = toType(std::string(sv.data(),sv.size()), types[0]);
 		}
 		else
 		{
 			for (size_t i = 0; i < names.size(); ++i)
 			{
-				if (i + 1 < match.size() && !match[i + 1].str().empty())
+				if (i < match.size() && !match[i].empty())
 				{
-					location[names[i]] = toType(match[i + 1].str(), types[i]);
+					const auto& sv = match[i];
+					location[names[i]] = toType(std::string(sv.data(),sv.size()), types[i]);
 				}
 			}
 		}

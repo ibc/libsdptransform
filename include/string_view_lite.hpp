@@ -38,7 +38,7 @@ namespace sdptransform
             }
         }
         string_view_lite(std::string::const_iterator begin, std::string::const_iterator end) : data_(&(*begin)), size_(end - begin) {}
-        string_view_lite(const std::string &s) : data_(s.data()), size_(s.size()) {}
+        explicit string_view_lite(const std::string &s) : data_(s.data()), size_(s.size()) {}
 
         // iterator support
         constexpr const_iterator begin() const noexcept { return data_; }
@@ -176,7 +176,7 @@ namespace sdptransform
         size_type size_ = 0U;     // exposition only
     };
 
-    std::basic_ostream<string_view_lite::value_type, string_view_lite::Traits_type> &
+    inline std::basic_ostream<string_view_lite::value_type, string_view_lite::Traits_type> &
     operator<<(std::basic_ostream<string_view_lite::value_type, string_view_lite::Traits_type> &os,
                string_view_lite str)
     {

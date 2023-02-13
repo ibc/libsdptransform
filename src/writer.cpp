@@ -116,8 +116,6 @@ namespace sdptransform
 		const json& location
 	)
 	{
-		static const std::regex FormatRegex("%[sdv%]");
-
 		const std::string format = rule.format.empty()
 			? rule.formatFunc(
 					!rule.push.empty()
@@ -169,14 +167,15 @@ namespace sdptransform
 
 		string_view runningFormat(format);
 		size_t nextPos = 0U;
-		for(
-			auto pos = runningFormat.find('%'); pos != std::string::npos; pos = runningFormat.find('%',nextPos))
+		for (
+			auto pos = runningFormat.find('%'); pos != std::string::npos; pos = runningFormat.find('%', nextPos))
 		{
-			const char nextChar = (pos+1<runningFormat.size()) ? runningFormat[pos+1] : '0';
-			const string_view prefix = runningFormat.substr(0,pos);
+			const char nextChar = (pos + 1 < runningFormat.size()) ? runningFormat[pos + 1] : '0';
+			const string_view prefix = runningFormat.substr(0, pos);
 
-			if(nextChar != '%' && nextChar != 'v' && nextChar != 'd' && nextChar != 's') {
-				nextPos = pos +2;
+			if (nextChar != '%' && nextChar != 'v' && nextChar != 'd' && nextChar != 's')
+			{
+				nextPos = pos + 2;
 				continue;
 			}
 
@@ -186,7 +185,7 @@ namespace sdptransform
 			}
 			else
 			{
-				auto& arg = args[i];
+				auto &arg = args[i];
 				i++;
 
 				linestream << prefix;
@@ -208,10 +207,11 @@ namespace sdptransform
 				}
 			}
 
-			runningFormat=runningFormat.substr(pos+2);
-			nextPos=0;
+			runningFormat = runningFormat.substr(pos + 2);
+			nextPos = 0;
 		}
-		if(!runningFormat.empty()) {
+		if (!runningFormat.empty())
+		{
 			linestream << runningFormat;
 		}
 

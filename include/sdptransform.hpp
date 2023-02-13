@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <regex>
 #include <functional>
+#include "matcher.hpp"
 
 using json = nlohmann::json;
 
@@ -18,7 +18,7 @@ namespace sdptransform
 		{
 			std::string name;
 			std::string push;
-			std::regex reg;
+			matcher::Ptr reg;
 			std::vector<std::string> names;
 			std::vector<char> types;
 			std::string format;
