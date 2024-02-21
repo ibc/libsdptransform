@@ -1,5 +1,7 @@
 #include "sdptransform.hpp"
-#include <cstddef>   // size_t
+
+#include <nlohmann/json.hpp>
+
 #include <sstream>   // std::stringstream
 #include <stdexcept>
 
@@ -9,11 +11,13 @@ namespace sdptransform
 		std::stringstream& sdpstream,
 		char type,
 		const grammar::Rule& rule,
-		const json& location
+		const nlohmann::json& location
 	);
 
-	std::string write(json& session)
+	std::string write(const nlohmann::json& sessionArg)
 	{
+        nlohmann::json session = sessionArg;
+
 		// RFC specified order.
 		static const std::vector<char> OuterOrder =
 			{ 'v', 'o', 's', 'i', 'u', 'e', 'p', 'c', 'b', 't', 'r', 'z', 'a' };
@@ -32,7 +36,7 @@ namespace sdptransform
 			session["name"] = "-";
 
 		if (session.find("media") == session.end())
-			session["media"] = json::array();
+			session["media"] = nlohmann::json::array();
 
 		for (auto& mLine : session.at("media"))
 		{
@@ -47,7 +51,7 @@ namespace sdptransform
 		{
 			for (auto& rule : grammar::rulesMap.at(type))
 			{
-				json::const_iterator it;
+				nlohmann::json::const_iterator it;
 
 				if (
 					!rule.name.empty() &&
@@ -80,7 +84,7 @@ namespace sdptransform
 			{
 				for (auto& rule : grammar::rulesMap.at(type))
 				{
-					json::const_iterator it;
+					nlohmann::json::const_iterator it;
 
 					if (
 						!rule.name.empty() &&
@@ -112,7 +116,7 @@ namespace sdptransform
 		std::stringstream& sdpstream,
 		char type,
 		const grammar::Rule& rule,
-		const json& location
+		const nlohmann::json& location
 	)
 	{
 		static const std::regex FormatRegex("%[sdv%]");
@@ -126,14 +130,14 @@ namespace sdptransform
 							: location)
 			: rule.format;
 
-		std::vector<json> args;
+		std::vector<nlohmann::json> args;
 		auto it = location.find(rule.name);
 
 		if (!rule.names.empty())
 		{
 			for (auto& name : rule.names)
 			{
-				json::const_iterator it;
+				nlohmann::json::const_iterator it;
 
 				if (
 					!rule.name.empty() &&
