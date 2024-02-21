@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # For CMake < 3.1.
 add_compile_options(-std=c++14)
 
-subdirs(test readme-helper)
+add_subdirectory(test readme-helper)
 
 include_directories(${sdptransform_SOURCE_DIR}/include)
 
@@ -20,13 +20,14 @@ set(
 	src/writer.cpp
 )
 
+# Only required for installation step
 set(
 	HEADER_FILES
 	include/sdptransform.hpp
 	include/json.hpp
 )
 
-add_library(sdptransform STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(sdptransform STATIC ${SOURCE_FILES})
 
 install(TARGETS sdptransform DESTINATION lib)
 install(FILES ${HEADER_FILES} DESTINATION include/sdptransform)
