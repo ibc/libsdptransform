@@ -1013,7 +1013,7 @@ namespace sdptransform
 						// push:
 						"",
 						// reg:
-						std::regex("^source-filter:[\\s\\t]+(excl|incl) (\\S*) (IP4|IP6|\\*) (\\S*) (.*)"),
+						std::regex("^source-filter:[\\s\\t]*(excl|incl) (\\S*) (IP4|IP6|\\*) (\\S*) (.*)"),
 						// names:
 						{ "filterMode", "netType", "addressTypes", "destAddress", "srcList" },
 						// types:
