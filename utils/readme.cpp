@@ -33,20 +33,20 @@ a=ssrc:1399694169 foo:bar
 a=ssrc:1399694169 baz
 )";
 
-static json session;
-
 void printParserSection();
 void printWriterSection();
 
 int main(int argc, char* argv[])
 {
-	printParserSection();
+    nlohmann::json session;
+
+    printParserSection();
 	printWriterSection();
 
 	return 0;
 }
 
-void printParserSection()
+void printParserSection(nlohmann::json &session)
 {
 	std::cout << "### Parser" << std::endl << std::endl;
 
@@ -58,14 +58,14 @@ void printParserSection()
 
 	std::cout << "sdptransform::parseParams():" << std::endl << std::endl;
 
-	json params =
+	nlohmann::json params =
 		sdptransform::parseParams(session.at("media")[1].at("fmtp")[0].at("config"));
 
 	std::cout << params.dump(2) << std::endl << std::endl;
 
 	std::cout << "sdptransform::parsePayloads():" << std::endl << std::endl;
 
-	json payloads =
+	nlohmann::json payloads =
 		sdptransform::parsePayloads(session.at("media")[1].at("payloads"));
 
 	std::cout << payloads.dump(2) << std::endl << std::endl;
@@ -74,7 +74,7 @@ void printParserSection()
 
 	std::string imageAttributesStr = "[x=1280,y=720] [x=320,y=180]";
 
-	json imageAttributes = sdptransform::parseImageAttributes(imageAttributesStr);
+	nlohmann::json imageAttributes = sdptransform::parseImageAttributes(imageAttributesStr);
 
 	std::cout << imageAttributes.dump(2) << std::endl << std::endl;
 
@@ -82,13 +82,13 @@ void printParserSection()
 
 	std::string simulcastAttributesStr = "1,~4;2;3";
 
-	json simulcastAttributes =
+	nlohmann::json simulcastAttributes =
 		sdptransform::parseSimulcastStreamList(simulcastAttributesStr);
 
 	std::cout << simulcastAttributes.dump(2) << std::endl << std::endl;
 }
 
-void printWriterSection()
+void printWriterSection(const nlohmann::json &session)
 {
 	std::cout << "### Writer" << std::endl << std::endl;
 

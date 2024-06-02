@@ -1,4 +1,7 @@
 #include "sdptransform.hpp"
+
+#include <nlohmann/json.hpp>
+
 #include <unordered_map>
 #include <cstddef>   // size_t
 #include <memory>    // std::addressof()
@@ -10,17 +13,17 @@
 
 namespace sdptransform
 {
-	void parseReg(const grammar::Rule& rule, json& location, const std::string& content);
+	void parseReg(const grammar::Rule& rule, nlohmann::json& location, const std::string& content);
 
 	void attachProperties(
 		const std::smatch& match,
-		json& location,
+		nlohmann::json& location,
 		const std::vector<std::string>& names,
 		const std::string& rawName,
 		const std::vector<char>& types
 	);
 
-	json toType(const std::string& str, char type);
+	nlohmann::json toType(const std::string& str, char type);
 
 	bool isNumber(const std::string& str);
 
@@ -30,17 +33,17 @@ namespace sdptransform
 
 	void trim(std::string& str);
 
-	void insertParam(json& o, const std::string& str);
+	void insertParam(nlohmann::json& o, const std::string& str);
 
-	json parse(const std::string& sdp)
+	nlohmann::json parse(const std::string& sdp)
 	{
 		static const std::regex ValidLineRegex("^([a-z])=(.*)");
 
-		json session = json::object();
+		nlohmann::json session = nlohmann::json::object();
 		std::stringstream sdpstream(sdp);
 		std::string line;
-		json media = json::array();
-		json* location = std::addressof(session);
+		nlohmann::json media = nlohmann::json::array();
+		nlohmann::json* location = std::addressof(session);
 
 		while (std::getline(sdpstream, line, '\n'))
 		{
@@ -57,10 +60,10 @@ namespace sdptransform
 
 			if (type == 'm')
 			{
-				json m = json::object();
+				nlohmann::json m = nlohmann::json::object();
 
-				m["rtp"] = json::array();
-				m["fmtp"] = json::array();
+				m["rtp"] = nlohmann::json::array();
+				m["fmtp"] = nlohmann::json::array();
 
 				media.push_back(m);
 
@@ -94,9 +97,9 @@ namespace sdptransform
 		return session;
 	}
 
-	json parseParams(const std::string& str)
+	nlohmann::json parseParams(const std::string& str)
 	{
-		json obj = json::object();
+		nlohmann::json obj = nlohmann::json::object();
 		std::stringstream ss(str);
 		std::string param;
 
@@ -128,9 +131,9 @@ namespace sdptransform
 		return arr;
 	}
 
-	json parseImageAttributes(const std::string& str)
+	nlohmann::json parseImageAttributes(const std::string& str)
 	{
-		json arr = json::array();
+		nlohmann::json arr = nlohmann::json::array();
 		std::stringstream ss(str);
 		std::string item;
 
@@ -145,7 +148,7 @@ namespace sdptransform
 			if (item.length() < 5) // [x=0]
 				continue;
 
-			json obj = json::object();
+			nlohmann::json obj = nlohmann::json::object();
 			std::stringstream ss2(item.substr(1, item.length() - 2));
 			std::string param;
 
@@ -165,9 +168,9 @@ namespace sdptransform
 		return arr;
 	}
 
-	json parseSimulcastStreamList(const std::string& str)
+	nlohmann::json parseSimulcastStreamList(const std::string& str)
 	{
-		json arr = json::array();
+		nlohmann::json arr = nlohmann::json::array();
 		std::stringstream ss(str);
 		std::string item;
 
@@ -176,7 +179,7 @@ namespace sdptransform
 			if (item.length() == 0)
 				continue;
 
-			json arr2 = json::array();
+			nlohmann::json arr2 = nlohmann::json::array();
 			std::stringstream ss2(item);
 			std::string format;
 
@@ -185,7 +188,7 @@ namespace sdptransform
 				if (format.length() == 0)
 					continue;
 
-				json obj = json::object();
+				nlohmann::json obj = nlohmann::json::object();
 
 				if (format[0] != '~')
 				{
@@ -207,25 +210,25 @@ namespace sdptransform
 		return arr;
 	}
 
-	void parseReg(const grammar::Rule& rule, json& location, const std::string& content)
+	void parseReg(const grammar::Rule& rule, nlohmann::json& location, const std::string& content)
 	{
 		bool needsBlank = !rule.name.empty() && !rule.names.empty();
 
 		if (!rule.push.empty() && location.find(rule.push) == location.end())
 		{
-			location[rule.push] = json::array();
+			location[rule.push] = nlohmann::json::array();
 		}
 		else if (needsBlank && location.find(rule.name) == location.end())
 		{
-			location[rule.name] = json::object();
+			location[rule.name] = nlohmann::json::object();
 		}
 
 		std::smatch match;
 
 		std::regex_search(content, match, rule.reg);
 
-		json object = json::object();
-		json& keyLocation = !rule.push.empty()
+		nlohmann::json object = nlohmann::json::object();
+		nlohmann::json& keyLocation = !rule.push.empty()
 			// Blank object that will be pushed.
 			? object
 			// Otherwise named location or root.
@@ -241,7 +244,7 @@ namespace sdptransform
 
 	void attachProperties(
 		const std::smatch& match,
-		json& location,
+		nlohmann::json& location,
 		const std::vector<std::string>& names,
 		const std::string& rawName,
 		const std::vector<char>& types
@@ -283,7 +286,7 @@ namespace sdptransform
 		return iss.eof() && !iss.fail();
 	}
 
-	json toType(const std::string& str, char type)
+	nlohmann::json toType(const std::string& str, char type)
 	{
 		// https://stackoverflow.com/a/447307/4827838.
 
@@ -354,7 +357,7 @@ namespace sdptransform
 	}
 
 	// @str parameters is a string like "profile-level-id=42e034".
-	void insertParam(json& o, const std::string& str)
+	void insertParam(nlohmann::json& o, const std::string& str)
 	{
 		static const std::regex KeyValueRegex("^\\s*([^= ]+)(?:\\s*=\\s*([^ ]+))?$");
 		static const std::unordered_map<std::string, char> WellKnownParameters =

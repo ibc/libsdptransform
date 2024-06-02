@@ -1,10 +1,12 @@
 #include "sdptransform.hpp"
 
+#include <nlohmann/json.hpp>
+
 namespace sdptransform
 {
 	namespace grammar
 	{
-		bool hasValue(const json& o, const std::string& key);
+		bool hasValue(const nlohmann::json& o, const std::string& key);
 
 		const std::map<char, std::vector<Rule>> rulesMap =
 		{
@@ -234,7 +236,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "ttl")
 								? "IN IP%d %s/%d"
@@ -283,7 +285,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "numPorts")
 								? "%s %d/%d %s %s"
@@ -311,7 +313,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "encoding")
 								? "rtpmap:%d %s/%s/%s"
@@ -369,7 +371,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "address")
 								? "rtcp:%d %s IP%d %s"
@@ -408,7 +410,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "subtype")
 								? "rtcp-fb:%s %s %s"
@@ -433,7 +435,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return std::string("extmap:%d") +
 								(hasValue(o, "direction") ? "/%s" : "%v") +
@@ -474,7 +476,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "sessionConfig")
 								? "crypto:%d %s %s %s"
@@ -661,7 +663,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							std::string str = "candidate:%s %d %s %d %s %d typ %s";
 
@@ -744,7 +746,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							std::string str = "ssrc:%d";
 
@@ -856,7 +858,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "maxMessageSize")
 								? "sctpmap:%s %s %s"
@@ -895,7 +897,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return hasValue(o, "params")
 								? "rid:%s %s %s"
@@ -930,7 +932,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return std::string("imageattr:%s %s %s") +
 								(hasValue(o, "dir2") ? " %s %s" : "");
@@ -963,7 +965,7 @@ namespace sdptransform
 						// format:
 						"",
 						// formatFunc:
-						[](const json& o)
+						[](const nlohmann::json& o)
 						{
 							return std::string("simulcast:%s %s") +
 								(hasValue(o, "dir2") ? " %s %s" : "");
@@ -1073,7 +1075,7 @@ namespace sdptransform
 			}
 		};
 
-		bool hasValue(const json& o, const std::string& key)
+		bool hasValue(const nlohmann::json& o, const std::string& key)
 		{
 			auto it = o.find(key);
 
